@@ -1,0 +1,17 @@
+{
+  "name": "comp231-402-team1",
+  "version": "1.0.0",
+  "description": "Hero for Hire. Developed for COMP231-402 Software Development Project, Winter 2025",
+  "main": "index.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leweenie/COMP231-402-TEAM1.git"
+  },
+  "author": "Wilson Canivilo, Caterina Esposito Mendes, Gail Henderson, Taryn Leween, Mohamed Hasnain Meghji, Natalie Rekai, Samantha Danielle Reyes, Fred Wong",
+  "license": "",
+  "bugs": {},
+  "homepage": ""
+}
