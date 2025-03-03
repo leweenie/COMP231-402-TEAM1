@@ -3,8 +3,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
 const NavBar = () => {
-  return (
-    // <Navbar expand="lg" className="bg-body-tertiary temp-border" id='NavBar'>
+  return (    
     <Navbar expand="lg" className="temp-border">
       <Container>
         <Navbar.Brand href="#">Navbar - Home</Navbar.Brand>

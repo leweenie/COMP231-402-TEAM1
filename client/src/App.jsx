@@ -15,10 +15,6 @@ const App = () => {
       <div id="NavBar" className="p-2"><NavBar/></div>
       <div id="Body" className="p-2"><Body/></div> 
       <div id="Footer" className="p-2"><Footer/></div>
-      {/* <Header/>
-      <NavBar/>
-      <Body/>
-      <Footer/> */}
     </Stack>
   );
 }
