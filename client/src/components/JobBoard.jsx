@@ -2,9 +2,9 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import { useState } from 'react';
 
 const JobBoard = () => {
-
   const tasks = [
     {
       id: 1,
@@ -63,6 +63,13 @@ const JobBoard = () => {
     },
   ];
 
+  const [appliedJobs, setAppliedJobs] = useState({});
+
+  const handleApply = (jobId) => {
+    setAppliedJobs((prev) => ({ ...prev, [jobId]: 'Application Pending' }));
+    console.log(`Applied to job ID: ${jobId}`);
+  };
+
   const getThumbnail = (thumbnail, title) =>
     thumbnail && thumbnail.trim() !== ''
       ? thumbnail
@@ -90,9 +97,15 @@ const JobBoard = () => {
               <p className="text-muted">{task.location}</p>
               <p style={{ fontSize: '0.9rem' }}>{task.description}</p>
               <div className="d-flex justify-content-center gap-2 mt-3">
-                <Button variant="primary" size="sm">
-                  Apply
-                </Button>
+                {appliedJobs[task.id] ? (
+                  <Button variant="success" size="sm" disabled>
+                    {appliedJobs[task.id]}
+                  </Button>
+                ) : (
+                  <Button variant="primary" size="sm" onClick={() => handleApply(task.id)}>
+                    Apply
+                  </Button>
+                )}
                 <Button variant="secondary" size="sm">
                   View Details
                 </Button>
