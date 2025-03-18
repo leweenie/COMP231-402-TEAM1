@@ -1,5 +1,5 @@
 #Header {
-  flex: 1 1 100px;
+  flex: 2 1 100px;
   margin: 0;
   display: flex;
   flex-flow: column nowrap;
@@ -13,15 +13,16 @@
 }
 
 #Body {
-  flex: 4 2 500px;
+  flex: 6 2 400px;
   margin: 0;
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
+  background-color: #f9fbfb;
 }
 
 #Footer {
-  flex: 1 1 100px;
+  flex: 1 1 80px;
   margin: 0;
   display: flex;
   flex-flow: column nowrap;
@@ -35,4 +36,34 @@
 
 .home-layout {
   min-height: 100vh;
+}
+
+.banner .title, .banner .image {
+  display: flex;
+}
+
+.banner .title {
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.banner .image {
+  justify-content: center;
+  align-items: center;
+}
+
+.banner img {
+  height: 140px;
+}
+
+.banner h1 {
+  color:#fff;
+  text-transform: uppercase;
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.profile-picture {
+  height: 200px;
+  width: 200px;
 }
