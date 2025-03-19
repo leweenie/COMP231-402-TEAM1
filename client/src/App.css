@@ -18,7 +18,7 @@
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
-  background-color: #f9fbfb;
+  background-color: #f6f6f8;
 }
 
 #Footer {
@@ -66,4 +66,32 @@
 .profile-picture {
   height: 200px;
   width: 200px;
+}
+.dash-profile-panel, .dash-job-panel {
+  background-color: #fff;
+  /* -webkit-box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.2); */
+  justify-content: flex-start;
+  align-items: center;
+  /* flex: 1 1 auto; */
+}
+.dash-job-panel h2 {
+  font-size: 24px;
+}
+
+.dash-job-panel .accordion {
+  width: 100%;
+}
+
+.dash-job-body {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+.dash-profile-panel {
+  align-items: center;
+  align-content: center;
+  
 }
