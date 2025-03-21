@@ -5,7 +5,7 @@ import Dashboard from './Dashboard';
 
 const Body = () => {
   return (
-   <Dashboard userId={10} />
+   <Dashboard userId={'67ddae53152733ec4df51bef'} />
    // <Container className='p-2 temp-border'>
    //    <Row className='p-2 temp-border'>
    //       <Col xs={12} sm={8} className='p-2 temp-border'>Body is like this - Col 1</Col>

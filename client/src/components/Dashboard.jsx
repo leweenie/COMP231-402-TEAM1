@@ -6,25 +6,32 @@ import Stack from 'react-bootstrap/esm/Stack';
 import Button from 'react-bootstrap/Button';
 import Accordion from 'react-bootstrap/Accordion';
 import { getUserData, getUserTasksByPosterId, getApplicantsByTask } from '../data/callDataFuncs';
-import { useState } from 'react';
+import ApplicantModal from './ApplicantModal';
+// import { getUserByID } from '../../../server/controllers/userControllers';
+import { useState, useEffect } from 'react';
 
 const Dashboard = (props) => {
    const { userId } = props;
-   const [user, setUser] = useState(getUserData(userId))
-   const [tasks, setTasks] = useState(() => getUserTasksByPosterId(userId))
+   const [tasks, setTasks] = useState(() => getUserTasksByPosterId(10)) // still using temp data here
+   const [user, setUser] = useState({})
+   const [modalShow, setModalShow] = useState(false)
 
-   
+   useEffect(() => {
+      const url = `http://localhost:5000/api/users/${userId}`
+      fetch(url)
+      .then(res=>res.json()).then(data => setUser(data))
+   }, [userId])
 
-
-   if (user) {
+   if (user.name) {
       return (
          <Container className='p-2'>
             <Row className='p-2'>
                <Col xs={12} sm={8}>
                   <Stack className='dash-job-panel p-4' direction='vertical' gap={3}>
+                     {/* <ApplicantModal show={modalShow} onHide={() => setModalShow(false)} /> */}
                      <h2>Track Active Jobs</h2>
                      <Accordion>
-                        {tasks.map((task, i) => <ActiveJob key={i} index={i} id={task.id} title={task.title} status={task.status} />)}
+                        {tasks.map((task, i) => <ActiveJob key={i} index={i} id={task.id} title={task.title} status={task.status} modalShow={modalShow} setModalShow={setModalShow} />)}
                      </Accordion>
                   </Stack>
                   
@@ -50,15 +57,24 @@ const Dashboard = (props) => {
 export default Dashboard
 
 const ActiveJob = (props) => {
-   const {index, id, title, status} = props
-   const [applicants, setApplicants] = useState(() => getApplicantsByTask(id))
+   const {index, id, title, status, modalShow, setModalShow} = props
+   const [applicants, setApplicants] = useState([])
+
+   useEffect(() => {
+      const data = getApplicantsByTask(id)
+      setApplicants(data)
+   }, [id])
 
    return (
       <Accordion.Item className='dash-job' eventKey={index}>
          <Accordion.Header className='dash-job-header'>{title}</Accordion.Header>
          <Accordion.Body className='dash-job-body'>
             <div className='status'>Status: {status.toUpperCase()}</div>
-            <div className='applicants'>Applicants: {applicants.length}</div>
+            <div className='applicants'>
+               Applicants: {applicants.length}
+               <Button onClick={() => setModalShow(true)} className='small-button'>View All</Button>
+               <ApplicantModal applicants={applicants} title={title} show={modalShow} onHide={() => setModalShow(false)} />
+            </div>
             <div className='view'>View Job</div>
          </Accordion.Body>
       </Accordion.Item>
@@ -66,7 +82,9 @@ const ActiveJob = (props) => {
 }
 
 const Stars = (props) => {
-   const {rating, count} = props
+   const {_rating, _count} = props
+   const rating = isNaN(_rating) ? 4.5 : _rating
+   const count = isNaN(_count) ? 2 : _count
 
    const getImage = () => {
       let value

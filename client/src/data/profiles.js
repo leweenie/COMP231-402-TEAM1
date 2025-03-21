@@ -7,9 +7,8 @@ const profiles = [
       powers: [],
       avgRating: 0,
       numReviews: 0
-      // avgRating: getUserReviewAvg(10),
-      // numReviews: getUserReviewCount(10)
    }
+
 ]
 
 export default profiles;
