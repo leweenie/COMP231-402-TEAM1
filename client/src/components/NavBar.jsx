@@ -13,6 +13,7 @@ const NavBar = () => {
           <Nav className='w-100' justify>
             <Nav.Link as={NavLink} to="/">Home</Nav.Link>
             <Nav.Link as={NavLink} to="/job-board">Job Board</Nav.Link>
+            <Nav.Link as={NavLink} to="/profile">Profile</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

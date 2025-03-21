@@ -10,6 +10,8 @@ import Footer from './components/Footer';
 import Body from './components/Body';
 import JobBoard from './components/JobBoard';
 
+import UserProfile from './components/UserProfile';
+
 const Layout = ({ children }) => (
   <Stack className="home-layout" direction="vertical" gap={0}>
     <div id="Header" className="p-2"><Header /></div>
@@ -25,6 +27,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Layout><Body /></Layout>} />
         <Route path="/job-board" element={<Layout><JobBoard /></Layout>} />
+        <Route path="/profile" element={<Layout><UserProfile /></Layout>} />
+
       </Routes>
     </Router>
   );
