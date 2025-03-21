@@ -8,58 +8,58 @@ const JobBoard = () => {
   const tasks = [
     {
       id: 1,
-      title: 'Alien Invasion Defense',
-      creator: 'United Nations',
-      location: 'Worldwide',
+      Title: 'Alien Invasion Defense',
+      Creator: 'United Nations',
+      Location: 'Worldwide',
       price: 50000,
       status: 'active',
       thumbnail: '',
-      description: 'Seeking superheroes to defend Earth from an approaching alien mothership. Experience preferred.',
-      postedDate: '2025-03-14'
+      Description: 'Seeking superheroes to defend Earth from an approaching alien mothership. Experience preferred.',
+      postDate: '2025-03-14'
     },
     {
       id: 2,
-      title: 'Super Speed Courier Needed',
-      creator: 'Daily Planet',
-      location: 'Central City',
+      Title: 'Super Speed Courier Needed',
+      Creator: 'Daily Planet',
+      Location: 'Central City',
       price: 300,
       status: 'active',
       thumbnail: '',
-      description: 'Urgent documents need to be delivered across the world in under 5 minutes. Speedsters apply now!',
-      postedDate: '2025-03-12'
+      Description: 'Urgent documents need to be delivered across the world in under 5 minutes. Speedsters apply now!',
+      postDate: '2025-03-12'
     },
     {
       id: 3,
-      title: 'Super Strength Moving Help',
-      creator: 'Lois Lane',
-      location: 'Metropolis',
+      Title: 'Super Strength Moving Help',
+      Creator: 'Lois Lane',
+      Location: 'Metropolis',
       price: 600,
       status: 'active',
       thumbnail: '',
-      description: 'Moving Batmobiles into storage. Must be able to lift heavy vehicles effortlessly.',
-      postedDate: '2025-03-10'
+      Description: 'Moving Batmobiles into storage. Must be able to lift heavy vehicles effortlessly.',
+      postDate: '2025-03-10'
     },
     {
       id: 4,
-      title: 'Underwater Rescue Mission',
-      creator: 'Atlantis Marine Research',
-      location: 'Atlantic Ocean',
+      Title: 'Underwater Rescue Mission',
+      Creator: 'Atlantis Marine Research',
+      Location: 'Atlantic Ocean',
       price: 4000,
       status: 'active',
       thumbnail: '',
-      description: 'A submarine is trapped! Need aquatic heroes comfortable working at extreme depths.',
-      postedDate: '2025-03-14'
+      Description: 'A submarine is trapped! Need aquatic heroes comfortable working at extreme depths.',
+      postDate: '2025-03-14'
     },
     {
       id: 5,
-      title: 'Time Travel Consultant',
-      creator: 'Temporal Affairs Bureau',
-      location: 'Chronopolis',
+      Title: 'Time Travel Consultant',
+      Creator: 'Temporal Affairs Bureau',
+      Location: 'Chronopolis',
       price: 13256,
       status: 'active',
       thumbnail: '',
-      description: 'Prevent a paradox! Need experienced time travelers to fix a timeline glitch.',
-      postedDate: '2025-03-13'
+      Description: 'Prevent a paradox! Need experienced time travelers to fix a timeline glitch.',
+      postDate: '2025-03-13'
     },
   ];
 
@@ -70,10 +70,10 @@ const JobBoard = () => {
     console.log(`Applied to job ID: ${jobId}`);
   };
 
-  const getThumbnail = (thumbnail, title) =>
+  const getThumbnail = (thumbnail, Title) =>
     thumbnail && thumbnail.trim() !== ''
       ? thumbnail
-      : `https://dummyimage.com/100x100/97ddf7/000.jpg&text=${encodeURIComponent(title)}`;
+      : `https://dummyimage.com/100x100/97ddf7/000.jpg&text=${encodeURIComponent(Title)}`;
 
   return (
     <Container className="p-4 temp-border">
@@ -83,7 +83,7 @@ const JobBoard = () => {
           <Col key={task.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
             <div className="job-card temp-border p-3 text-center">
               <img
-                src={getThumbnail(task.thumbnail, task.title)}
+                src={getThumbnail(task.thumbnail, task.Title)}
                 style={{
                   width: '80px',
                   height: '80px',
@@ -91,11 +91,11 @@ const JobBoard = () => {
                   marginBottom: '10px',
                 }}
               />
-              <h5>{task.title}</h5>
+              <h5>{task.Title}</h5>
               <p className="fw-bold">${task.price}</p>
-              <p className="fw-bold">{task.creator}</p>
-              <p className="text-muted">{task.location}</p>
-              <p style={{ fontSize: '0.9rem' }}>{task.description}</p>
+              <p className="fw-bold">{task.Creator}</p>
+              <p className="text-muted">{task.Location}</p>
+              <p style={{ fontSize: '0.9rem' }}>{task.Description}</p>
               <div className="d-flex justify-content-center gap-2 mt-3">
                 {appliedJobs[task.id] ? (
                   <Button variant="success" size="sm" disabled>
@@ -111,7 +111,7 @@ const JobBoard = () => {
                 </Button>
               </div>
               <p className="text-muted mt-2" style={{ fontSize: '0.8rem' }}>
-                Posted on: {task.postedDate}
+                Posted on: {task.postDate}
               </p>
             </div>
           </Col>

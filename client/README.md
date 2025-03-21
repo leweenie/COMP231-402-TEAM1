@@ -14,4 +14,4 @@ If you are developing a production application, we recommend using TypeScript an
 ## How to get the frontend up and running?
 
 - Navigate to the client folder with your integrated console and use `npm install`. 
-- Run the server with `npm run dev`
+- Run the client with `npm run dev`
