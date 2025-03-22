@@ -6,6 +6,8 @@ const userRoutes = require("./routes/userRoutes.js")
 const taskRoutes = require("./routes/taskRoutes.js")
 const jobRoutes = require("./routes/jobRoutes.js")
 const applicationRoutes = require("./routes/applicationRoutes.js")
+const jobRoutes = require("./routes/jobRoutes.js")
+const applicationRoutes = require("./routes/applicationRoutes.js")
 
 dotenv.config(); 
 
@@ -19,7 +21,9 @@ mongoose.connect(process.env.MONGO_URI)
   
   app.use("/api/users", userRoutes);
   app.use("/api/jobs", taskRoutes);
-  //app.use("/api/applications", require("./routes/applicationRoutes"));
+  app.use("/api/applications", require("./routes/applicationRoutes"));
+  app.use("/api/jobs", jobRoutes);
+
   app.use("/api/jobs", jobRoutes);
 
   
