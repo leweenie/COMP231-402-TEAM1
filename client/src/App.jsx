@@ -1,5 +1,5 @@
 import './App.css';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Stack from 'react-bootstrap/Stack';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 

@@ -2,6 +2,10 @@
   "name": "comp231-402-team1",
   "version": "1.0.0",
   "description": "Hero for Hire. Developed for COMP231-402 Software Development Project, Winter 2025",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "test": "",
     "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\""
