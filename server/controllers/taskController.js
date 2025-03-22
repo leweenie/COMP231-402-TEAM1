@@ -24,4 +24,64 @@ const getAllTasksSorted = async (req, res) => {
     }
 };
 
-module.exports = { getAllTasks, getAllTasksSorted };
+// Create a new task
+const createTask = async (req, res) => {
+    try {
+        const { title, location, description, skills } = req.body;
+        const image = req.file ? req.file.path : null;
+
+        const newTask = new Task({
+            title,
+            location,
+            description,
+            skills: skills ? skills.split(",") : [],
+            image,
+        });
+
+        await newTask.save();
+        res.status(201).json(newTask);
+    } catch (err) {
+        res.status(400).json({ error: "Unable to create task." });
+    }
+};
+
+// Get task by ID
+const getTaskByID = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const task = await Task.findById(id);
+
+        if (!task) {
+            return res.status(404).json({ error: "Task not found." });
+        }
+        res.status(200).json(task);
+    } catch (err) {
+        res.status(500).json({ error: "Something went wrong, task could not be found." });
+    }
+};
+
+
+// Update Task Progress
+const updateTaskProgress = async (req, res) => {
+    const { id } = req.params;
+    const { progress } = req.body;
+
+    try {
+        if (progress < 0 || progress > 100) {
+            return res.status(400).json({ error: "Progress must be between 0 and 100." });
+        }
+
+        const updatedTask = await Task.findByIdAndUpdate(id, { progress }, { new: true });
+
+        if (!updatedTask) {
+            return res.status(404).json({ error: "Task not found." });
+        }
+
+        res.status(200).json(updatedTask);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to update task progress." });
+    }
+};
+
+module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskProgress };
