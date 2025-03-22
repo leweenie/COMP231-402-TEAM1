@@ -18,6 +18,7 @@ const upload = multer({ storage });
 router.post("/", upload.single("image"), jobController.createJob);
 router.get("/", jobController.getAllJobs);
 router.get("/:id", jobController.getJobByID);
+router.patch("/:id/progress", updateJobProgress);
 
 
 module.exports = router;

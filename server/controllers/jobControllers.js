@@ -47,4 +47,36 @@ const getJobByID = async (req, res) => {
     }
 };
 
-module.exports = { createJob, getAllJobs, getJobByID };
+// Get Active jobs
+const getActiveJobs = async (req, res) => {
+    try {
+        const activeJobs = await Job.find({ status: "active" });
+        res.status(200).json(activeJobs);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch active jobs." });
+    }
+};
+
+// Update Job Progress
+const updateJobProgress = async (req, res) => {
+    const { id } = req.params;
+    const { progress } = req.body;
+
+    try {
+        if (progress < 0 || progress > 100) {
+            return res.status(400).json({ error: "Progress must be between 0 and 100." });
+        }
+
+        const updatedJob = await Job.findByIdAndUpdate(id, { progress }, { new: true });
+
+        if (!updatedJob) {
+            return res.status(404).json({ error: "Job not found." });
+        }
+
+        res.status(200).json(updatedJob);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to update job progress." });
+    }
+};
+
+module.exports = { createJob, getAllJobs, getJobByID, getActiveJobs, updateJobProgress };

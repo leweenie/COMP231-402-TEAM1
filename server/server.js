@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes.js")
 const jobRoutes = require("./routes/jobRoutes.js")
+const applicationRoutes = require("./routes/applicationRoutes.js")
 
 dotenv.config(); 
 
@@ -17,8 +18,9 @@ mongoose.connect(process.env.MONGO_URI)
   
   app.use("/api/users", userRoutes);
   //app.use("/api/tasks/", require("./routes/taskRoutes"));
-  //app.use("/api/applications", require("./routes/applicationRoutes"));
+  app.use("/api/applications", require("./routes/applicationRoutes"));
   app.use("/api/jobs", jobRoutes);
+
   
   app.listen(5000, () => {
     console.log(`Server is running on 5000`);
