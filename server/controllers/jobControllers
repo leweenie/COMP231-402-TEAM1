@@ -1,0 +1,50 @@
+const Job = require("../models/Job");
+
+// Create a new job
+const createJob = async (req, res) => {
+    try {
+        const { title, location, description, skills } = req.body;
+        const image = req.file ? req.file.path : null;
+
+        const newJob = new Job({
+            title,
+            location,
+            description,
+            skills: skills ? skills.split(",") : [],
+            image,
+        });
+
+        await newJob.save();
+        res.status(201).json(newJob);
+    } catch (err) {
+        res.status(400).json({ error: "Unable to create job." });
+    }
+};
+
+// Get all jobs
+const getAllJobs = async (req, res) => {
+    try {
+        const jobs = await Job.find();
+        res.status(200).json(jobs);
+    } catch (err) {
+        res.status(500).json({ error: "Could not retrieve jobs." });
+    }
+};
+
+// Get job by ID
+const getJobByID = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const job = await Job.findById(id);
+
+        if (!job) {
+            return res.status(404).json({ error: "Job not found." });
+        }
+        res.status(200).json(job);
+    } catch (err) {
+        res.status(500).json({ error: "Something went wrong, job could not be found." });
+    }
+};
+
+module.exports = { createJob, getAllJobs, getJobByID };
