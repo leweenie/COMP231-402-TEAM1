@@ -1,6 +1,6 @@
 # How to Run
-Install the application with `npm install` from the root folder
-Run the application with `npm run dev` from the root folder
+- Install the application with `npm install` from the root folder
+- Run the application with `npm run dev` from the root folder
 
 # COMP231-402-TEAM1
 
