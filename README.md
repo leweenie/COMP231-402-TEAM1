@@ -1,3 +1,6 @@
+# How to Run
+Run the application with `npm run dev`
+
 # COMP231-402-TEAM1
 
 ## Iteration 1: Tasks
