@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { ObjectId } from 'bson';
 
 const TASK_STATUSES = ['active', 'inactive', 'completed', 'in-progress'];
 
@@ -32,20 +31,21 @@ export const generateMockJobPosters = (count = 5) => {
   for (let i = 0; i < count; i++) {
     const profile = {
       bio: faker.lorem.sentence(),
+      image: faker.image.personPortrait(),
       avgRating: parseFloat(faker.number.float({ min: 1.0, max: 5.0, precision: 0.1 })),
       numReviews: faker.number.int({ min: 0, max: 100 }),
       powers: ['None']
     };
 
     jobPosters.push({
-      _id: new ObjectId(),
-      Name: faker.person.fullName(),
-      Email: faker.internet.email(),
-      Phone: faker.phone.number(),
-      Role: faker.helpers.arrayElement(['Job Poster']),
-      Profile: profile,
-      Task_posted: [],
-      Tasks_completed: []
+      _id: faker.database.mongodbObjectId(),
+      name: faker.person.fullName(),
+      email: faker.internet.email(),
+      phone: faker.phone.number(),
+      role: faker.helpers.arrayElement(['Job Poster']),
+      profile: profile,
+      task_posted: [],
+      tasks_completed: []
     });
   }
 
@@ -66,14 +66,14 @@ export const generateMockSuperheroes = (count = 5) => {
     };
 
     superheroes.push({
-      _id: new ObjectId(),
-      Name: faker.person.fullName(),
-      Email: faker.internet.email(),
-      Phone: faker.phone.number(),
-      Role: faker.helpers.arrayElement(['Superhero']),
-      Profile: profile,
-      Task_posted: [],
-      Tasks_completed: []
+      _id: faker.database.mongodbObjectId(),
+      name: faker.person.fullName(),
+      email: faker.internet.email(),
+      phone: faker.phone.number(),
+      role: faker.helpers.arrayElement(['Superhero']),
+      profile: profile,
+      task_posted: [],
+      tasks_completed: []
     });
   }
 
@@ -89,14 +89,15 @@ export const generateMockTasks = (jobPosters, count = 5) => {
     
 
     tasks.push({
-      _id: new ObjectId(),
-      Title: faker.hacker.phrase(),
-      Creator: randomUser._id,
-      Location: `${faker.address.city()}, ${faker.address.country()}`,
-      Description: faker.lorem.sentence(),
+      _id: faker.database.mongodbObjectId(),
+      title: faker.hacker.phrase(),
+      creator: randomUser._id,
+      location: `${faker.location.city()}, ${faker.location.country()}`,
+      description: faker.lorem.sentence(),
       postDate: faker.date.recent(30),
-      thumbnail: faker.image.avatar(),
-      Status: faker.helpers.arrayElement(TASK_STATUSES)
+      image: faker.image.urlPicsumPhotos({ blur: 0, width: 128, height: 128 }),
+      status: faker.helpers.arrayElement(TASK_STATUSES),
+      claimedBy: null
     });
   }
 
