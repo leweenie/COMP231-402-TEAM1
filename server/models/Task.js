@@ -10,7 +10,6 @@ const taskSchema = new mongoose.Schema({
         enum: ["active", "inactive", "completed", "in-progress"], 
         default: "active" 
     },
-    progress: { type: Number, min: 0, max: 100, default: 0 },
     skills: [{ type: String }], // Array to store selected abilities,
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
     claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 

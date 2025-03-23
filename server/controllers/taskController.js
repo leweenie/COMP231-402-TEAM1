@@ -62,17 +62,25 @@ const getTaskByID = async (req, res) => {
 };
 
 
-// Update Task Progress
-const updateTaskProgress = async (req, res) => {
+// Update Task Status
+const updateTaskStatus = async (req, res) => {
     const { id } = req.params;
-    const { progress } = req.body;
+    const { status } = req.body;
+
+    const allowedStatuses = ["active", "inactive", "completed", "in-progress"];
 
     try {
-        if (progress < 0 || progress > 100) {
-            return res.status(400).json({ error: "Progress must be between 0 and 100." });
+        // Validate status input
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({ error: "Invalid status value." });
         }
 
-        const updatedTask = await Task.findByIdAndUpdate(id, { progress }, { new: true });
+        // Update task status
+        const updatedTask = await Task.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true, runValidators: true } // Return updated task & apply schema validation
+        );
 
         if (!updatedTask) {
             return res.status(404).json({ error: "Task not found." });
@@ -80,8 +88,8 @@ const updateTaskProgress = async (req, res) => {
 
         res.status(200).json(updatedTask);
     } catch (err) {
-        res.status(500).json({ error: "Failed to update task progress." });
+        res.status(500).json({ error: "Failed to update task status." });
     }
 };
 
-module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskProgress };
+module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus };
