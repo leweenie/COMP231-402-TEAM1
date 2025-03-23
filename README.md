@@ -1,6 +1,7 @@
 # How to Run
 - Install the application with `npm install` from the root folder
 - Run the application with `npm run dev` from the root folder
+- May need to delete existing node_modules folders in client and server folders if you've got an older, existing version of the repo (including branches)
 
 # COMP231-402-TEAM1
 
