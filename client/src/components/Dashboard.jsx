@@ -5,14 +5,14 @@ import Image from 'react-bootstrap/Image';
 import Stack from 'react-bootstrap/esm/Stack';
 import Button from 'react-bootstrap/Button';
 import Accordion from 'react-bootstrap/Accordion';
-import { getUserData, getUserTasksByPosterId, getApplicantsByTask } from '../data/callDataFuncs';
+// import { getUserData, getUserTasksByPosterId, getApplicantsByTask } from '../data/callDataFuncs';
 import ApplicantModal from './ApplicantModal';
 // import { getUserByID } from '../../../server/controllers/userControllers';
 import { useState, useEffect } from 'react';
 
 const Dashboard = (props) => { 
    const { userId } = props;
-   const [tasks, setTasks] = useState(() => getUserTasksByPosterId(10)) // still using temp data here
+   const [tasks, setTasks] = useState([])
    const [user, setUser] = useState({})
    const [modalShow, setModalShow] = useState(false)
 
@@ -33,7 +33,7 @@ const Dashboard = (props) => {
                      {/* <ApplicantModal show={modalShow} onHide={() => setModalShow(false)} /> */}
                      <h2>Track Active Jobs</h2>
                      <Accordion>
-                        {tasks.map((task, i) => <ActiveJob key={i} index={i} id={task.id} title={task.title} status={task.status} modalShow={modalShow} setModalShow={setModalShow} />)}
+                        { tasks.length ? tasks.map((task, i) => <ActiveJob key={i} index={i} id={task.id} title={task.title} status={task.status} modalShow={modalShow} setModalShow={setModalShow} />) : null }
                      </Accordion>
                   </Stack>
                   
@@ -64,10 +64,10 @@ const ActiveJob = (props) => {
    const {index, id, title, status, modalShow, setModalShow} = props
    const [applicants, setApplicants] = useState([])
 
-   useEffect(() => {
-      const data = getApplicantsByTask(id)
-      setApplicants(data)
-   }, [id])
+   // useEffect(() => {
+   //    const data = getApplicantsByTask(id)
+   //    setApplicants(data)
+   // }, [id])
 
    // useEffect(() => {
    //    const url = `http://localhost:5000/api/jobs/${id}`
