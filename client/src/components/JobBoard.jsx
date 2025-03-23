@@ -8,6 +8,7 @@ import { generateMockTasks, generateMockJobPosters } from '../utils/MockDataGene
 const JobBoard = () => {
   const [tasks, setTasks] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState({});
+  const [noJobsMessage, setNoJobsMessage] = useState('');
 
   useEffect(() => {
     const mockCreators = generateMockJobPosters(5);
@@ -24,18 +25,26 @@ const JobBoard = () => {
             'Accept': 'application/json',
           },
         });
-        
+
+        if (!response.ok) {
+          throw new Error(`HTTP error - Status: ${response.status}`);
+        }
+
         const data = await response.json();
         console.log(data);
 
         if (Array.isArray(data) && data.length > 0) {
           setTasks(data);
+          setNoJobsMessage('');
         } else {
-          console.log('No tasks found, using mock tasks');
-          setTasks(mockTasks);
+          console.log('No tasks found');
+          setNoJobsMessage('No jobs available');
         }
       } catch (error) {
-        console.error('Error fetching tasks:', error);
+        console.error('Error fetching tasks from server:', error);
+        // Fallback to mock tasks when there's an error with the backend server
+        setTasks(mockTasks);
+        setNoJobsMessage('Server unavailable. Showing mock jobs.');
       }
     };
 
@@ -60,6 +69,12 @@ const JobBoard = () => {
         Create Job Post
       </Button>
       <Row>
+        {noJobsMessage && (
+          <Col xs={12}>
+            <div className="text-center text-muted mb-4">{noJobsMessage}</div>
+          </Col>
+        )}
+
         {tasks.map((task) => (
           <Col key={task._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
             <div className="job-card temp-border p-3 text-center">
