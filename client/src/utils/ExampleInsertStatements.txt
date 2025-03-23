@@ -1,0 +1,29 @@
+db.tasks.insertOne({
+    "_id": ObjectId("c34caaac7e0f25d71ec91f3d"),
+    "title": "Time Travel Consultant",
+    "creator": ObjectId("96328ac1ecdbfad5d7ff1ac8"),
+    "location": "Harrisonburg, Burundi",
+    "description": "Prevent a paradox! Need experienced time travelers to fix a timeline glitch.",
+    "postDate": ISODate("2025-03-21T22:17:59.243Z"),
+    "image": "https://picsum.photos/seed/otmH7Q/128/128?grayscale",
+    "status": "completed",
+    "claimedBy": null
+})
+db.users.insertOne({
+    "_id": ObjectId("11a5ce05e3c7d8c3b52f7a6e"),
+    "name": "Billy Abshire",
+    "email": "Anahi.Effertz76@gmail.com",
+    "phone": "(963) 277-8098 x367",
+    "role": "Job Poster",
+    "profile": {
+        "bio": "Villa crux voveo.",
+        "image": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/62.jpg",
+        "avgRating": 2.9863357279533362,
+        "numReviews": 79,
+        "powers": [
+            "None"
+        ]
+    },
+    "task_posted": [],
+    "tasks_completed": []
+})

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const profileSchema = new mongoose.Schema({
     bio: {type: String},
+    image: {type: String},
     powers: {type: [String]},
     avgRating: {type: Number},
     numReviews: {type: Number}
@@ -19,5 +20,5 @@ const userSchema = new mongoose.Schema({
 }, 
 ); 
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("user", userSchema);
 module.exports = User;

@@ -3,14 +3,17 @@ const mongoose = require("mongoose");
 const taskSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String },
+    image: {type: String},
     location: { type: String },
     status: { 
         type: String, 
         enum: ["active", "inactive", "completed", "in-progress"], 
         default: "active" 
     },
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true }, 
-    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" }, 
+    progress: { type: Number, min: 0, max: 100, default: 0 },
+    skills: [{ type: String }], // Array to store selected abilities,
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 
     postDate: { type: Date, default: Date.now } 
 }, 
 { timestamps: true }
