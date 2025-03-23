@@ -5,7 +5,6 @@ import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
 import { generateMockTasks, generateMockJobPosters } from '../utils/MockDataGenerator';
 import ApplicantsModal from './ApplicantsModal';
-import sampleApplicants from '../data/sampleApplicants.json';
 
 const JobBoard = () => {
   const [tasks, setTasks] = useState([]);
