@@ -40,13 +40,9 @@ const JobBoard = () => {
 
         if (Array.isArray(data) && data.length > 0) {
           setTasks(data);
-          // Allocate random applicants to each job
           const applicants = {};
           data.forEach(task => {
-            const shuffledApplicants = [...sampleApplicants.applicants]
-              .sort(() => Math.random() - 0.5)
-              .slice(0, Math.floor(Math.random() * 3) + 1);
-            applicants[task._id] = shuffledApplicants;
+            applicants[task._id] = task.applicants || [];
           });
           setJobApplicants(applicants);
           setNoJobsMessage('');
