@@ -56,6 +56,9 @@ const JobBoard = () => {
   return (
     <Container className="p-4 temp-border">
       <h2 className="mb-4">Job Board</h2>
+      <Button variant="primary" href="/create-job-post" className="mb-3">
+        Create Job Post
+      </Button>
       <Row>
         {tasks.map((task) => (
           <Col key={task._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
