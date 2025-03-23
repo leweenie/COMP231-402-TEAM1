@@ -4,11 +4,16 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
 import { generateMockTasks, generateMockJobPosters } from '../utils/MockDataGenerator';
+import ApplicantsModal from './ApplicantsModal';
+import sampleApplicants from '../data/sampleApplicants.json';
 
 const JobBoard = () => {
   const [tasks, setTasks] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState({});
   const [noJobsMessage, setNoJobsMessage] = useState('');
+  const [showApplicants, setShowApplicants] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState(null);
+  const [jobApplicants, setJobApplicants] = useState({});
 
   useEffect(() => {
     const mockCreators = generateMockJobPosters(5);
@@ -35,6 +40,15 @@ const JobBoard = () => {
 
         if (Array.isArray(data) && data.length > 0) {
           setTasks(data);
+          // Allocate random applicants to each job
+          const applicants = {};
+          data.forEach(task => {
+            const shuffledApplicants = [...sampleApplicants.applicants]
+              .sort(() => Math.random() - 0.5)
+              .slice(0, Math.floor(Math.random() * 3) + 1);
+            applicants[task._id] = shuffledApplicants;
+          });
+          setJobApplicants(applicants);
           setNoJobsMessage('');
         } else {
           console.log('No tasks found');
@@ -44,6 +58,15 @@ const JobBoard = () => {
         console.error('Error fetching tasks from server:', error);
         // Fallback to mock tasks when there's an error with the backend server
         setTasks(mockTasks);
+        // Allocate random applicants to mock tasks
+        const applicants = {};
+        mockTasks.forEach(task => {
+          const shuffledApplicants = [...sampleApplicants.applicants]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, Math.floor(Math.random() * 3) + 1);
+          applicants[task._id] = shuffledApplicants;
+        });
+        setJobApplicants(applicants);
         setNoJobsMessage('Server unavailable. Showing mock jobs.');
       }
     };
@@ -54,6 +77,11 @@ const JobBoard = () => {
   const handleApply = (jobId) => {
     setAppliedJobs((prev) => ({ ...prev, [jobId]: 'Application Pending' }));
     console.log(`Applied to job ID: ${jobId}`);
+  };
+
+  const handleViewDetails = (jobId) => {
+    setSelectedJobId(jobId);
+    setShowApplicants(true);
   };
 
   // Parse for image URL, else fallback to dummy image
@@ -101,7 +129,7 @@ const JobBoard = () => {
                     Apply
                   </Button>
                 )}
-                <Button variant="secondary" size="sm">
+                <Button variant="secondary" size="sm" onClick={() => handleViewDetails(task._id)}>
                   View Details
                 </Button>
               </div>
@@ -112,6 +140,12 @@ const JobBoard = () => {
           </Col>
         ))}
       </Row>
+
+      <ApplicantsModal
+        show={showApplicants}
+        onHide={() => setShowApplicants(false)}
+        applicants={jobApplicants[selectedJobId] || []}
+      />
     </Container>
   );
 };
