@@ -10,7 +10,7 @@ import ApplicantModal from './ApplicantModal';
 // import { getUserByID } from '../../../server/controllers/userControllers';
 import { useState, useEffect } from 'react';
 
-const Dashboard = (props) => {
+const Dashboard = (props) => { 
    const { userId } = props;
    const [tasks, setTasks] = useState(() => getUserTasksByPosterId(10)) // still using temp data here
    const [user, setUser] = useState({})
@@ -21,6 +21,8 @@ const Dashboard = (props) => {
       fetch(url)
       .then(res=>res.json()).then(data => setUser(data))
    }, [userId])
+
+
 
    if (user.name) {
       return (
@@ -38,7 +40,9 @@ const Dashboard = (props) => {
                </Col>
                <Col xs={12} sm={4}>
                   <Stack className='dash-profile-panel p-4' direction='vertical' gap={3}>
-                     <Image className='profile-picture' src="/src/assets/sample-poster-profile.jpg" roundedCircle />
+                     {/* <Image className='profile-picture' src="/src/assets/profiles/profile4.jpg" roundedCircle /> */}
+                     <Image className='profile-picture' src={user.profile.image} roundedCircle />
+
                      <div className='user'>
                         <h2>{user.name}</h2>
                      </div>
@@ -64,6 +68,12 @@ const ActiveJob = (props) => {
       const data = getApplicantsByTask(id)
       setApplicants(data)
    }, [id])
+
+   // useEffect(() => {
+   //    const url = `http://localhost:5000/api/jobs/${id}`
+   //    fetch(url)
+   //    .then(res=>res.json()).then(data => setApplicants(data))
+   // }, [id])
 
    return (
       <Accordion.Item className='dash-job' eventKey={index}>

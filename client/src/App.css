@@ -101,3 +101,13 @@
   padding: 5px 10px;
   margin: 0 10px;
 }
+
+.navigation a.nav-link, .navigation a.navbar-brand {
+  color: #1C75BC;
+  font-weight: 700;
+}
+
+.navigation a.nav-link:hover, .navigation a.navbar-brand:hover {
+  text-decoration: underline;
+  /* border-bottom: #1C75BC solid 1px; */
+}
