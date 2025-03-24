@@ -4,11 +4,15 @@ import Modal from 'react-bootstrap/Modal';
 
 const DashApplicantModal = (props) => {
    const {applicants, title, show, onHide} = props
-   const [applicantNames, setApplicantNames] = useState([])
+   const [applicantDetails, setApplicantDetails] = useState([])
 
    useEffect(() => {
-
-   })
+      if (applicants) {
+         const results = []
+         applicants.map(el => results.push(el.applicant))
+         setApplicantDetails(results)
+      }
+   }, [applicants])
 
    return (
       <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered {...props}>
@@ -17,8 +21,9 @@ const DashApplicantModal = (props) => {
          </Modal.Header>
          <Modal.Body>
             <h4>{title}</h4>
+            Superheroes Applied:
             <ul>
-               {applicants.map((app, i) => (<li key={i}>User ID: {app.applicantId}</li>))}
+               {applicantDetails.map((app, i) => (<li key={i}>{app.name}</li>))}
             </ul>
          </Modal.Body>
          <Modal.Footer>
