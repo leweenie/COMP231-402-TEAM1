@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskProgress } = require("../controllers/taskController");
+const { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus } = require("../controllers/taskController");
 const multer = require("multer");
 
 
@@ -15,10 +15,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.post("/", upload.single("image"), createTask);
+router.post("/create", upload.single("image"), createTask);
 router.get("/", getAllTasks);
 router.get("/board", getAllTasksSorted);
 router.get("/:id", getTaskByID);
-router.patch("/:id/progress", updateTaskProgress);
+router.patch("/:id/progress", updateTaskStatus);
 
 module.exports = router;

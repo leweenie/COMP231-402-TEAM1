@@ -1,4 +1,6 @@
 const Task = require("../models/Task.js");
+const Application = require("../models/Application.js");
+const User = require("../models/User.js");
 
 // @desc    Get all jobs
 // @route   GET /api/tasks
@@ -17,7 +19,24 @@ const getAllTasks = async (req, res) => {
 const getAllTasksSorted = async (req, res) => {
     try {
         const tasks = await Task.find({ status: "active" }).sort({ postDate: -1 });
-        res.status(200).json(tasks);
+        
+        const tasksWithApplicants = await Promise.all(tasks.map(async (task) => {
+            const applications = await Application.find({ task: task._id })
+                .populate('applicant', 'name profile');
+            
+            return {
+                ...task.toObject(),
+                applicants: applications.map(app => ({
+                    _id: app.applicant._id,
+                    name: app.applicant.name,
+                    profile: app.applicant.profile,
+                    status: app.status,
+                    date: app.date
+                }))
+            };
+        }));
+
+        res.status(200).json(tasksWithApplicants);
     } catch (error) {
         console.error("Error fetching tasks:", error);
         res.status(500).json({ message: "Server Error" });
@@ -62,17 +81,25 @@ const getTaskByID = async (req, res) => {
 };
 
 
-// Update Task Progress
-const updateTaskProgress = async (req, res) => {
+// Update Task Status
+const updateTaskStatus = async (req, res) => {
     const { id } = req.params;
-    const { progress } = req.body;
+    const { status } = req.body;
+
+    const allowedStatuses = ["active", "inactive", "completed", "in-progress"];
 
     try {
-        if (progress < 0 || progress > 100) {
-            return res.status(400).json({ error: "Progress must be between 0 and 100." });
+        // Validate status input
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({ error: "Invalid status value." });
         }
 
-        const updatedTask = await Task.findByIdAndUpdate(id, { progress }, { new: true });
+        // Update task status
+        const updatedTask = await Task.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true, runValidators: true } // Return updated task & apply schema validation
+        );
 
         if (!updatedTask) {
             return res.status(404).json({ error: "Task not found." });
@@ -80,8 +107,8 @@ const updateTaskProgress = async (req, res) => {
 
         res.status(200).json(updatedTask);
     } catch (err) {
-        res.status(500).json({ error: "Failed to update task progress." });
+        res.status(500).json({ error: "Failed to update task status." });
     }
 };
 
-module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskProgress };
+module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus };
