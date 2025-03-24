@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-const ApplicantModal = (props) => {
+const DashApplicantModal = (props) => {
    const {applicants, title, show, onHide} = props
    const [applicantNames, setApplicantNames] = useState([])
 
@@ -28,4 +28,4 @@ const ApplicantModal = (props) => {
    );
 }
 
-export default ApplicantModal;
+export default DashApplicantModal;

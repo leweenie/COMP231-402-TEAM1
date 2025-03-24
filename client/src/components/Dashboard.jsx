@@ -6,7 +6,7 @@ import Stack from 'react-bootstrap/esm/Stack';
 import Button from 'react-bootstrap/Button';
 import Accordion from 'react-bootstrap/Accordion';
 // import { getUserData, getUserTasksByPosterId, getApplicantsByTask } from '../data/callDataFuncs';
-import ApplicantModal from './ApplicantModal';
+import DashApplicantModal from './DashApplicantModal';
 // import { getUserByID } from '../../../server/controllers/userControllers';
 import { useState, useEffect } from 'react';
 
@@ -21,6 +21,19 @@ const Dashboard = (props) => {
       fetch(url)
       .then(res=>res.json()).then(data => setUser(data))
    }, [userId])
+
+   useEffect(() => {
+      if (Object.keys(user).length) {
+         const results = []
+         const url = 'http://localhost:5000/api/jobs/'
+         fetch(url)
+         .then(res=>res.json()).then(data => data.map(el => {
+            if (el.creator == user._id) results.push(el)} ))
+         .then(() => setTasks(results))
+      }
+      // fetch(url)
+      // .then(res=>res.json()).then(data => setUser(data))
+   }, [user])
 
 
 
@@ -83,7 +96,7 @@ const ActiveJob = (props) => {
             <div className='applicants'>
                Applicants: {applicants.length}
                <Button onClick={() => setModalShow(true)} className='small-button'>View All</Button>
-               <ApplicantModal applicants={applicants} title={title} show={modalShow} onHide={() => setModalShow(false)} />
+               <DashApplicantModal applicants={applicants} title={title} show={modalShow} onHide={() => setModalShow(false)} />
             </div>
             <div className='view'>View Job</div>
          </Accordion.Body>
