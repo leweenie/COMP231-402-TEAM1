@@ -5,9 +5,7 @@ import Image from 'react-bootstrap/Image';
 import Stack from 'react-bootstrap/esm/Stack';
 import Button from 'react-bootstrap/Button';
 import Accordion from 'react-bootstrap/Accordion';
-// import { getUserData, getUserTasksByPosterId, getApplicantsByTask } from '../data/callDataFuncs';
 import DashApplicantModal from './DashApplicantModal';
-// import { getUserByID } from '../../../server/controllers/userControllers';
 import { useState, useEffect } from 'react';
 
 const Dashboard = (props) => { 
@@ -28,11 +26,13 @@ const Dashboard = (props) => {
          const url = 'http://localhost:5000/api/jobs/'
          fetch(url)
          .then(res=>res.json()).then(data => data.map(el => {
-            if (el.creator == user._id) results.push(el)} ))
+            if (el.creator == user._id) {
+               el.type = 'poster'
+               results.push(el)
+            }} ))
+         .then()
          .then(() => setTasks(results))
-      }
-      // fetch(url)
-      // .then(res=>res.json()).then(data => setUser(data))
+      }      
    }, [user])
 
 
@@ -53,7 +53,6 @@ const Dashboard = (props) => {
                </Col>
                <Col xs={12} sm={4}>
                   <Stack className='dash-profile-panel p-4' direction='vertical' gap={3}>
-                     {/* <Image className='profile-picture' src="/src/assets/profiles/profile4.jpg" roundedCircle /> */}
                      <Image className='profile-picture' src={user.profile.image} roundedCircle />
 
                      <div className='user'>
@@ -63,7 +62,7 @@ const Dashboard = (props) => {
                         <p>{user.profile.bio}</p>
                         <Stars rating={user.profile.avgRating} count={user.profile.numReviews}/>
                      </div>
-                     <Button>Create a Job Post</Button>
+                     <Button href="/create-job-post" >Create a Job Post</Button>
                   </Stack>
                </Col>
             </Row>

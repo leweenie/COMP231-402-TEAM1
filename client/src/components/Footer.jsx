@@ -4,9 +4,9 @@ import Col from 'react-bootstrap/Col';
 
 const Footer = () => {
   return (
-   <Container className='p-2 temp-border'>
-    <Row className='p-2 temp-border'>
-         <Col className='p-2 temp-border'>Footer is here</Col>
+   <Container className='p-2 footer'>
+    <Row className='p-2'>
+         <Col className='p-2'>Hero For Hire &copy; 2025</Col>
       </Row>
     </Container>
   );
