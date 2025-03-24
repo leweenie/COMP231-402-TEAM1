@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import Body from './components/Body';
 import JobBoard from './components/JobBoard';
 import CreateJobForm from './components/CreateJobForm';
+import Dashboard from './components/Dashboard';
 
 import UserProfile from './components/UserProfile';
 
@@ -27,10 +28,10 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Layout><Body /></Layout>} />
+        <Route path="/dashboard" element={<Layout><Dashboard userId={'67e042b2c10084905143d0e7'} /></Layout>} />
         <Route path="/job-board" element={<Layout><JobBoard /></Layout>} />
         <Route path="/profile" element={<Layout><UserProfile /></Layout>} />
         <Route path="/create-job-post" element={<Layout><CreateJobForm /></Layout>} />
-
       </Routes>
     </Router>
   );
