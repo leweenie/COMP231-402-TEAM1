@@ -27,7 +27,7 @@ const Layout = ({ children }) => (
 const App = () => {
 
   const [userId, setUserId] = useState(null)
-  const [userName, setUserName] = useState('User A')
+  const [userName, setUserName] = useState('Job Poster')
 
   useEffect(() => {
     if (!userName){
@@ -36,7 +36,7 @@ const App = () => {
     } else {
       document.getElementById('navDetailRef').classList.remove('hide')
       document.getElementById('navRef').innerText = `Viewing as: ${userName}`
-      userName == 'User A' ? setUserId('67e042b2c10084905143d0e7') : setUserId('67e056755de81c089382446e')
+      userName == 'Job Poster' ? setUserId('67e042b2c10084905143d0e7') : setUserId('67e056755de81c089382446e')
     }
   }, [userName])
 
