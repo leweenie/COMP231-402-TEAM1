@@ -28,6 +28,7 @@
   flex-flow: column nowrap;
   justify-content: flex-start;
   background-color: #1C75BC;
+  color: #fff;
 }
 
 .temp-border {
@@ -110,4 +111,8 @@
 .navigation a.nav-link:hover, .navigation a.navbar-brand:hover {
   text-decoration: underline;
   /* border-bottom: #1C75BC solid 1px; */
+}
+
+.hide {
+  display: none !important;
 }

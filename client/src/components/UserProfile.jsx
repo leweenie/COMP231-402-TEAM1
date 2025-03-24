@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 
-const UserProfile = () => {
+const UserProfile = (props) => {
+    const {userId} = props;
+
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
 
     const updateProfile = () => {
         console.log("Update Profile Clicked!");
     };
-    
-    
 
     useEffect(() => {
         console.log("useEffect is running...");
-        fetch("http://localhost:5000/api/users/67db2e5c15fde8b56d70ee7d")
+        fetch(`http://localhost:5000/api/users/${userId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -34,7 +34,7 @@ const UserProfile = () => {
 
     return (
         <div style={styles.container}>
-            <img src={user.profilePic || "https://www.w3schools.com/w3images/avatar2.png"} alt="Profile" style={styles.image} />
+            <img src={user.profile.image || "https://www.w3schools.com/w3images/avatar2.png"} alt="Profile" style={styles.image} />
             <h2>{user.name}</h2>
             <p><strong>Email:</strong> {user.email}</p>
             <p><strong>Bio:</strong> {user.profile?.bio || "No bio available"}</p>
