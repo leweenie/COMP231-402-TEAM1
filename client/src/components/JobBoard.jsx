@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
 import { generateMockTasks, generateMockJobPosters } from '../utils/MockDataGenerator';
 import ApplicantsModal from './ApplicantsModal';
+import JobDetails from './JobDetails';
 
 const JobBoard = () => {
   const [tasks, setTasks] = useState([]);
@@ -13,6 +14,7 @@ const JobBoard = () => {
   const [showApplicants, setShowApplicants] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [jobApplicants, setJobApplicants] = useState({});
+  const [showJobDetails, setShowJobDetails] = useState(false);
 
   useEffect(() => {
     const mockCreators = generateMockJobPosters(5);
@@ -76,7 +78,12 @@ const JobBoard = () => {
 
   const handleViewDetails = (jobId) => {
     setSelectedJobId(jobId);
-    setShowApplicants(true);
+    setShowJobDetails(true);
+  };
+
+  const handleCloseJobDetails = () => {
+    setShowJobDetails(false);
+    setSelectedJobId(null);
   };
 
   // Parse for image URL, else fallback to dummy image
@@ -135,6 +142,13 @@ const JobBoard = () => {
           </Col>
         ))}
       </Row>
+
+      {showJobDetails && selectedJobId && (
+        <JobDetails
+          jobId={selectedJobId}
+          onClose={handleCloseJobDetails}
+        />
+      )}
 
       <ApplicantsModal
         show={showApplicants}
