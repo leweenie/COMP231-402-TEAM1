@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Accordion from 'react-bootstrap/Accordion';
 
 import DashApplicantModal from './DashApplicantModal';
+import JobDetails from './JobDetails';
 
 const ActiveJobDash = (props) => {
    // const {index, id, title, status, modalShow, setModalShow} = props
@@ -11,6 +12,7 @@ const ActiveJobDash = (props) => {
 
    const [applicants, setApplicants] = useState([])
    const [modalShow, setModalShow] = useState(false)
+   const [showJobDetails, setShowJobDetails] = useState(false)
 
 
    useEffect(() => {
@@ -31,7 +33,8 @@ const ActiveJobDash = (props) => {
                <Button onClick={() => setModalShow(true)} className='small-button'>View All</Button>
                <DashApplicantModal applicants={applicants} title={title} show={modalShow} onHide={() => setModalShow(false)} />
             </div>
-            <div className='view'>View Job</div>
+            <Button variant="outline-primary" onClick={() => setShowJobDetails(true)}>View Job</Button>
+            <JobDetails jobId={id} show={showJobDetails} onClose={() => setShowJobDetails(false)} />
          </Accordion.Body>
       </Accordion.Item>
    )
