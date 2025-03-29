@@ -147,6 +147,7 @@ const JobBoard = () => {
         <JobDetails
           jobId={selectedJobId}
           onClose={handleCloseJobDetails}
+          show={showJobDetails}
         />
       )}
 
