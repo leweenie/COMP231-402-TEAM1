@@ -11,9 +11,10 @@ import Accordion from 'react-bootstrap/Accordion';
 import DashApplicantModal from './DashApplicantModal';
 import StarRatings from './StarRatings';
 import ActiveJobDash from './ActiveJobDash'
+import Notifications from './Notifications';
 
 const Dashboard = (props) => { 
-   const { userId } = props;
+   const { userId, viewerRole } = props;
    const [tasks, setTasks] = useState([])
    const [user, setUser] = useState({})
 
@@ -39,6 +40,11 @@ const Dashboard = (props) => {
    if (user.name) {
       return (
          <Container className='p-2'>
+            <Row className='p-2'>
+               <Col xs={12}>
+                  <Notifications viewerRole={viewerRole} />
+               </Col>
+            </Row>
             <Row className='p-2'>
                <Col xs={12} sm={8}>
                   <Stack className='dash-job-panel p-4' direction='vertical' gap={3}>
