@@ -26,7 +26,7 @@ const JobDetails = ({ jobId, onClose, show }) => {
                 }
                 const data = await response.json();
                 setJobDetails(data);
-                const jobReviews = getReviewsForJob(jobId);
+                const jobReviews = await getReviewsForJob(jobId);
                 setReviews(jobReviews);
             } catch (err) {
                 setError(err.message);
@@ -41,7 +41,7 @@ const JobDetails = ({ jobId, onClose, show }) => {
     const handleReviewSubmit = async (review) => {
         const result = await saveReview(review);
         if (result.success) {
-            setReviews(prevReviews => [...prevReviews, review]);
+            setReviews(prevReviews => [...prevReviews, result.review]);
             setShowReviewForm(false);
         }
     };
