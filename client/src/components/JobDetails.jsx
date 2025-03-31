@@ -175,7 +175,7 @@ const JobDetails = ({ jobId, onClose, show }) => {
                                                 ))}
                                             </div>
                                             <small className="text-muted">
-                                                {new Date(review.timestamp).toLocaleDateString()}
+                                                {new Date(review.dateReviewed).toLocaleDateString()}
                                             </small>
                                         </div>
                                         <p className="mb-0">{review.comment}</p>
