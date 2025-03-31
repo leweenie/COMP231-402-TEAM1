@@ -1,0 +1,119 @@
+.review-submission-container {
+	max-width: 600px;
+	margin: 2rem auto;
+	padding: 2rem;
+	background-color: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.review-submission-container h2 {
+	color: #2c3e50;
+	margin-bottom: 1.5rem;
+	text-align: center;
+}
+
+.review-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.superhero-select-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.superhero-select-container label {
+	font-weight: 600;
+	color: #34495e;
+}
+
+.superhero-select-container select {
+	padding: 0.75rem;
+	border: 2px solid #e0e0e0;
+	border-radius: 8px;
+	font-size: 1rem;
+	background-color: white;
+	cursor: pointer;
+	transition: border-color 0.2s ease;
+}
+
+.superhero-select-container select:focus {
+	outline: none;
+	border-color: #3498db;
+}
+
+.rating-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.rating-container label {
+	font-weight: 600;
+	color: #34495e;
+}
+
+.star-rating {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.star {
+	font-size: 2rem;
+	cursor: pointer;
+	color: #ddd;
+	transition: color 0.2s ease;
+}
+
+.star.filled {
+	color: #f1c40f;
+}
+
+.comment-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.comment-container label {
+	font-weight: 600;
+	color: #34495e;
+}
+
+textarea {
+	padding: 1rem;
+	border: 2px solid #e0e0e0;
+	border-radius: 8px;
+	font-size: 1rem;
+	resize: none;
+	min-height: 120px;
+	transition: border-color 0.2s ease;
+}
+
+textarea:focus {
+	outline: none;
+	border-color: #3498db;
+}
+
+.submit-button {
+	background-color: #3498db;
+	color: white;
+	padding: 1rem 2rem;
+	border: none;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.submit-button:hover {
+	background-color: #2980b9;
+}
+
+.submit-button:active {
+	transform: scale(0.98);
+}
