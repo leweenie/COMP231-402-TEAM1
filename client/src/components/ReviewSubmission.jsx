@@ -3,11 +3,10 @@ import "./ReviewSubmission.css";
 
 const ReviewSubmission = ({ jobId, jobTitle, onSubmit }) => {
   const [review, setReview] = useState({
+    task: jobId,
     rating: 0,
     comment: "",
-    jobId: jobId,
-    jobTitle: jobTitle,
-    timestamp: new Date().toISOString(),
+    dateReviewed: new Date().toISOString()
   });
 
   const handleRatingChange = (value) => {
@@ -22,16 +21,16 @@ const ReviewSubmission = ({ jobId, jobTitle, onSubmit }) => {
     e.preventDefault();
     onSubmit(review);
     setReview({
+      task: jobId,
       rating: 0,
       comment: "",
-      jobId: jobId,
-      jobTitle: jobTitle,
-      timestamp: new Date().toISOString(),
+      dateReviewed: new Date().toISOString()
     });
   };
 
   return (
     <div className="review-submission-container">
+      <h2>Submit Review for {jobTitle}</h2>
       <form onSubmit={handleSubmit} className="review-form">
         <div className="rating-container">
           <label>Rating:</label>
