@@ -7,24 +7,47 @@ import { generateMockTasks, generateMockJobPosters } from '../utils/MockDataGene
 import ApplicantsModal from './ApplicantsModal';
 import JobDetails from './JobDetails';
 
-const JobBoard = () => {
+const JobBoard = (props) => {
+  const { userId, viewerRole } = props;
   const [tasks, setTasks] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState({});
-  const [noJobsMessage, setNoJobsMessage] = useState('');
   const [showApplicants, setShowApplicants] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [jobApplicants, setJobApplicants] = useState({});
   const [showJobDetails, setShowJobDetails] = useState(false);
 
+  // Variable for displaying a message when no jobs are available
+  const [noJobsMessage, setNoJobsMessage] = useState('');
+
+  // Variables for URL query for filtering params
+  const [searchField, setSearchField] = useState('');
+  const [locationField, setLocationField] = useState('');
+  const [selectedPowers, setSelectedPowers] = useState([]);
+
   useEffect(() => {
-    const mockCreators = generateMockJobPosters(5);
-    console.log(mockCreators)
-    const mockTasks = generateMockTasks(mockCreators, 5)
-    console.log(mockTasks)
+
 
     const fetchJobs = async () => {
+      // Compose params query for filtering
+      const searchQuery = encodeURIComponent(searchField);
+      const locationQuery = encodeURIComponent(locationField);
+      const powersQuery = selectedPowers.map(encodeURIComponent).join(',');
+      const queryParams = new URLSearchParams();
+      if (searchQuery) {
+        queryParams.append("search", searchQuery);
+      }
+      if (locationQuery) {
+        queryParams.append("location", locationQuery);
+      }
+      if (powersQuery) {
+        queryParams.append("skills", powersQuery);
+      }
+
+      // Call backend to retrieve list of jobs, 
+      // sorted by status = active and lastest date
+      // filtered by title/description, location, and/or powers
       try {
-        const response = await fetch('http://localhost:5000/api/jobs/board', {
+        const response = await fetch(`http://localhost:5000/api/jobs/board?${queryParams.toString()}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -37,7 +60,6 @@ const JobBoard = () => {
         }
 
         const data = await response.json();
-        console.log(data);
 
         if (Array.isArray(data) && data.length > 0) {
           setTasks(data);
@@ -48,28 +70,20 @@ const JobBoard = () => {
           setJobApplicants(applicants);
           setNoJobsMessage('');
         } else {
-          console.log('No tasks found');
           setNoJobsMessage('No jobs available');
         }
       } catch (error) {
         console.error('Error fetching tasks from server:', error);
         // Fallback to mock tasks when there's an error with the backend server
+        const mockCreators = generateMockJobPosters(5);
+        const mockTasks = generateMockTasks(mockCreators, 5)
         setTasks(mockTasks);
-        // Allocate random applicants to mock tasks
-        const applicants = {};
-        mockTasks.forEach(task => {
-          const shuffledApplicants = [...sampleApplicants.applicants]
-            .sort(() => Math.random() - 0.5)
-            .slice(0, Math.floor(Math.random() * 3) + 1);
-          applicants[task._id] = shuffledApplicants;
-        });
-        setJobApplicants(applicants);
         setNoJobsMessage('Server unavailable. Showing mock jobs.');
       }
     };
 
     fetchJobs();
-  }, []);
+  }, [locationField, searchField, selectedPowers]);
 
   const handleApply = (jobId) => {
     setAppliedJobs((prev) => ({ ...prev, [jobId]: 'Application Pending' }));
@@ -122,14 +136,16 @@ const JobBoard = () => {
               <p className="text-muted">{task.location}</p>
               <p style={{ fontSize: '0.9rem' }}>{task.description}</p>
               <div className="d-flex justify-content-center gap-2 mt-3">
-                {appliedJobs[task._id] ? (
-                  <Button variant="success" size="sm" disabled>
-                    {appliedJobs[task._id]}
-                  </Button>
-                ) : (
-                  <Button variant="primary" size="sm" onClick={() => handleApply(task._id)}>
-                    Apply
-                  </Button>
+                {viewerRole !== 'Job Poster' && (
+                  appliedJobs[task._id] ? (
+                    <Button variant="success" size="sm" disabled>
+                      {appliedJobs[task._id]}
+                    </Button>
+                  ) : (
+                    <Button variant="primary" size="sm" onClick={() => handleApply(task._id)}>
+                      Apply
+                    </Button>
+                  )
                 )}
                 <Button variant="secondary" size="sm" onClick={() => handleViewDetails(task._id)}>
                   View Details
