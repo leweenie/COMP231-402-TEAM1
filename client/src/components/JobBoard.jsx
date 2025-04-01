@@ -25,8 +25,6 @@ const JobBoard = (props) => {
   const [selectedPowers, setSelectedPowers] = useState([]);
 
   useEffect(() => {
-
-
     const fetchJobs = async () => {
       // Compose params query for filtering
       const searchQuery = encodeURIComponent(searchField);
@@ -44,7 +42,7 @@ const JobBoard = (props) => {
       }
 
       // Call backend to retrieve list of jobs, 
-      // sorted by status = active and lastest date
+      // sorted by status = active and lastest date,
       // filtered by title/description, location, and/or powers
       try {
         const response = await fetch(`http://localhost:5000/api/jobs/board?${queryParams.toString()}`, {
@@ -73,8 +71,8 @@ const JobBoard = (props) => {
           setNoJobsMessage('No jobs available');
         }
       } catch (error) {
-        console.error('Error fetching tasks from server:', error);
-        // Fallback to mock tasks when there's an error with the backend server
+        console.error('Error fetching jobs from server:', error);
+        // Fallback to mock jobs when there's an error with the backend server
         const mockCreators = generateMockJobPosters(5);
         const mockTasks = generateMockTasks(mockCreators, 5)
         setTasks(mockTasks);
@@ -136,7 +134,7 @@ const JobBoard = (props) => {
               <p className="text-muted">{task.location}</p>
               <p style={{ fontSize: '0.9rem' }}>{task.description}</p>
               <div className="d-flex justify-content-center gap-2 mt-3">
-                {viewerRole !== 'Job Poster' && (
+                {viewerRole === 'Superhero' && (
                   appliedJobs[task._id] ? (
                     <Button variant="success" size="sm" disabled>
                       {appliedJobs[task._id]}
@@ -165,7 +163,7 @@ const JobBoard = (props) => {
           onClose={handleCloseJobDetails}
           show={showJobDetails}
         />
-      )}
+      )};
 
       <ApplicantsModal
         show={showApplicants}
