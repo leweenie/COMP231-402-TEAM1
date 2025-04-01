@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
@@ -6,6 +7,11 @@ const JobDetails = ({ jobId, onClose, show }) => {
     const [jobDetails, setJobDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    const handleEditJob = () => {
+        navigate(`/edit-job-post/${jobId}`);
+    };
 
     useEffect(() => {
         const fetchJobDetails = async () => {
@@ -103,6 +109,9 @@ const JobDetails = ({ jobId, onClose, show }) => {
                 )}
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="warning" onClick={handleEditJob}>
+                    Edit Job
+                </Button>
                 <Button variant="primary" onClick={onClose}>
                     Close
                 </Button>

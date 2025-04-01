@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus } = require("../controllers/taskController");
+const { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus, updateTask } = require("../controllers/taskController");
 const multer = require("multer");
 
 
@@ -20,5 +20,6 @@ router.get("/", getAllTasks);
 router.get("/board", getAllTasksSorted);
 router.get("/:id", getTaskByID);
 router.patch("/:id/progress", updateTaskStatus);
+router.patch("/edit-job/:taskId", updateTask);
 
 module.exports = router;

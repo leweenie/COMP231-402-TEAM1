@@ -64,6 +64,36 @@ const createTask = async (req, res) => {
     }
 };
 
+const updateTask = async (req, res) => {
+    const { taskId } = req.params;
+    const { title, description, location, status, skills, image } = req.body;
+
+    try {
+        // Find the task by ID
+        const task = await Task.findById(taskId);
+
+        if (!task) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+
+        // Update task fields
+        task.title = title || task.title;
+        task.description = description || task.description;
+        task.location = location || task.location;
+        task.status = status || task.status;
+        task.skills = skills || task.skills;
+        task.image = image || task.image;
+
+        // Save the updated task
+        const updatedTask = await task.save();
+
+        return res.status(200).json(updatedTask); // Return the updated task
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Failed to update task" });
+    }
+};
+
 // Get task by ID
 const getTaskByID = async (req, res) => {
     const { id } = req.params;
@@ -111,4 +141,4 @@ const updateTaskStatus = async (req, res) => {
     }
 };
 
-module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus };
+module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus, updateTask };
