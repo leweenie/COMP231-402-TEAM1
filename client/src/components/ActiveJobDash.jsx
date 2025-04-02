@@ -31,7 +31,7 @@ const ActiveJobDash = (props) => {
             <div className='applicants'>
                Applicants: {applicants.length}
                <Button onClick={() => setModalShow(true)} className='small-button'>View All</Button>
-               <DashApplicantModal applicants={applicants} title={title} show={modalShow} onHide={() => setModalShow(false)} />
+               <DashApplicantModal jobid={id} applicants={applicants} title={title} show={modalShow} onHide={() => setModalShow(false)} />
             </div>
             <Button variant="outline-primary" onClick={() => setShowJobDetails(true)}>View Job</Button>
             <JobDetails jobId={id} show={showJobDetails} onClose={() => setShowJobDetails(false)} />
