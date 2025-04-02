@@ -14,11 +14,37 @@ const getAllTasks = async (req, res) => {
     }
 };
 
-// @desc    Get all jobs, sorted by status = active and date; for default Job Board
+// @desc    Get all jobs, sorted by status = active and date, filtered by title, description, location, and/or powers
 // @route   GET /api/tasks/board
 const getAllTasksSorted = async (req, res) => {
     try {
-        const tasks = await Task.find({ status: "active" }).sort({ postDate: -1 });
+        // variables to hold URL params representing the filters
+        const { search, location, skills } = req.query;
+        
+        // Query for active jobs only
+        let query = { status: "active" };
+
+        // Filter by title or description, case insensitive
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: "i" } },
+                { description: { $regex: search, $options: "i" }}
+            ];
+        }
+
+        // Filter by location, case insensitive
+        if (location) {
+            query.location = { $regex: location, $options: "i" };
+        }
+
+        // Filter by skills
+        if (skills) {
+            const skillsArray = skills.split(",");
+            query.skills = { $in: skillsArray };
+        }
+
+        // Fetch jobs, filter by above queries, and sort by postDate newest first
+        const tasks = await Task.find(query).sort({ postDate: -1 });
         
         const tasksWithApplicants = await Promise.all(tasks.map(async (task) => {
             const applications = await Application.find({ task: task._id })
