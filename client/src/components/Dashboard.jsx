@@ -12,11 +12,15 @@ import DashApplicantModal from './DashApplicantModal';
 import StarRatings from './StarRatings';
 import ActiveJobDash from './ActiveJobDash'
 import Notifications from './Notifications';
+import JobHistoryModal from './JobHistoryModal'; 
 
 const Dashboard = (props) => { 
    const { userId, viewerRole } = props;
-   const [tasks, setTasks] = useState([])
-   const [user, setUser] = useState({})
+   const [tasks, setTasks] = useState([]);
+   const [user, setUser] = useState({});
+   const [jobHistory, setJobHistory] = useState([]); 
+   const [showHistoryModal, setShowHistoryModal] = useState(false); 
+   const [isLoading, setIsLoading] = useState(false); 
 
    useEffect(() => {
       if (userId) {
@@ -24,7 +28,7 @@ const Dashboard = (props) => {
          fetch(url)
          .then(res=>res.json()).then(data => setUser(data))
       }
-   }, [userId])
+   }, [userId]);
 
    useEffect(() => {
       if (Object.keys(user).length) {
@@ -32,10 +36,27 @@ const Dashboard = (props) => {
          const url = 'http://localhost:5000/api/jobs/'
          fetch(url)
          .then(res=>res.json()).then(data => data.map(el => {
-            if (el.creator == user._id) results.push(el) }))
+            if (el.creator == user._id) results.push(el);
+         }))
          .then(() => setTasks(results))
       }      
-   }, [user])
+   }, [user]);
+
+   const fetchJobHistory = () => {
+      setIsLoading(true);
+      fetch('http://localhost:5000/api/jobs')
+         .then(res => res.json())
+         .then(data => {
+            const history = data.filter(job => job.creator === user._id && job.status === "active");
+            setJobHistory(history);
+            setIsLoading(false);
+         });
+   };
+
+   const handleJobHistoryClick = () => {
+      fetchJobHistory();  
+      setShowHistoryModal(true); 
+   };
 
    if (user.name) {
       return (
@@ -50,10 +71,12 @@ const Dashboard = (props) => {
                   <Stack className='dash-job-panel p-4' direction='vertical' gap={3}>
                      <h2>Track Active Jobs</h2>
                      <Accordion>
-                        { tasks.length ? tasks.map((task, i) => <ActiveJobDash key={i} index={i} id={task._id} title={task.title} status={task.status} />) : null }
+                        {tasks.length ? tasks.map((task, i) => (
+                           <ActiveJobDash key={i} index={i} id={task._id} title={task.title} status={task.status} />
+                        )) : null}
                      </Accordion>
+                     <Button onClick={handleJobHistoryClick}>Job History</Button> 
                   </Stack>
-                  
                </Col>
                <Col xs={12} sm={4}>
                   <Stack className='dash-profile-panel p-4' direction='vertical' gap={3}>
@@ -63,14 +86,23 @@ const Dashboard = (props) => {
                      </div>
                      <div className='rating'>
                         <p>{user.profile.bio}</p>
-                        <StarRatings rating={user.profile.avgRating} count={user.profile.numReviews}/>
+                        <StarRatings rating={user.profile.avgRating} count={user.profile.numReviews} />
                      </div>
-                     <Button href="/create-job-post" >Create a Job Post</Button>
+                     <Button href="/create-job-post">Create a Job Post</Button>
                   </Stack>
                </Col>
             </Row>
+            <JobHistoryModal 
+               show={showHistoryModal} 
+               onHide={() => setShowHistoryModal(false)} 
+               jobs={jobHistory} 
+               isLoading={isLoading} 
+            />
          </Container>
       )
    }
+
+   return null;
 }
-export default Dashboard
+
+export default Dashboard;
