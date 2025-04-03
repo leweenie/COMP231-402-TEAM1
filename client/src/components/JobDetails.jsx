@@ -79,6 +79,27 @@ const JobDetails = ({ jobId, onClose, show }) => {
           <h5>Description</h5>
           <p>{jobDetails.description}</p>
         </div>
+
+        {jobDetails.skills && jobDetails.skills.length > 0 && (
+          <div className="mb-3">
+            <h5>Required Powers</h5>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+              {jobDetails.skills.map((skill, index) => (
+                <span
+                  key={index}
+                  style={{
+                    background: "#f8f9fa",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "20px",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  {skill.trim()}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={onClose}>
