@@ -47,7 +47,7 @@ const Dashboard = (props) => {
       fetch('http://localhost:5000/api/jobs')
          .then(res => res.json())
          .then(data => {
-            const history = data.filter(job => job.creator === user._id && job.status === "active");
+            const history = data.filter(job => job.creator === user._id && (job.status === "completed" || job.status === "inactive"));
             setJobHistory(history);
             setIsLoading(false);
          });
