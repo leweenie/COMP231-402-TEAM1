@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import Image from 'react-bootstrap/Image';
 
 const DashApplicantModal = (props) => {
-   const {applicants, title, show, onHide} = props
+   const {applicants, title, show, onHide, taskId} = props
    const [applicantDetails, setApplicantDetails] = useState([])
 
    useEffect(() => {
@@ -21,6 +21,27 @@ const DashApplicantModal = (props) => {
          fetchApplicantDetails()
       }
    }, [applicants])
+
+   const handleAcceptApplicant = async (taskId, applicantId) => {
+      try {
+         const response = await fetch(`http://localhost:5000/api/applications/accept/${taskId}/${applicantId}`, {
+            method: 'PATCH',
+            headers: {
+               'Content-Type': 'application/json'
+            }
+         });
+         
+         if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to accept applicant');
+         }
+         
+         onHide();
+         
+      } catch (error) {
+         console.error('Error accepting applicant:', error);
+      }
+   };
 
    return (
       <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered {...props}>
@@ -43,7 +64,13 @@ const DashApplicantModal = (props) => {
                            <span className="text-muted">{app.profile.bio}</span>
                         </div>
                      </div>
-                     <Button size="sm" variant="primary">Accept</Button>
+                     <Button 
+                        size="sm" 
+                        variant="primary"
+                        onClick={() => handleAcceptApplicant(taskId, app._id)}
+                     >
+                        Accept
+                     </Button>
                   </div>
                ))}
             </div>
