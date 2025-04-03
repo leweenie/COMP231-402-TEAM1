@@ -1,4 +1,5 @@
 const Application = require("../models/Application");
+const Task = require("../models/Task");
 
 const submitApplication = async (req, res) => {
     try {
@@ -36,4 +37,51 @@ const getApplicants = async (req, res) => {
     }
 };
 
-module.exports = { submitApplication, getApplicants };
+const acceptApplicant = async (req, res) => {
+    try {
+        const { taskId, applicantId } = req.params;
+        
+        const acceptedApplication = await Application.findOneAndUpdate(
+            { task: taskId, applicant: applicantId },
+            { status: "accepted" },
+            { new: true }
+        );
+        
+        if (!acceptedApplication) {
+            return res.status(404).json({ error: "Application not found" });
+        }
+        
+        await Application.updateMany(
+            { 
+                task: taskId, 
+                applicant: { $ne: applicantId },
+                status: { $ne: "rejected" }
+            },
+            { status: "rejected" }
+        );
+        
+        const updatedTask = await Task.findByIdAndUpdate(
+            taskId,
+            { 
+                status: "in-progress",
+                claimedBy: applicantId 
+            },
+            { new: true }
+        );
+        
+        if (!updatedTask) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+        
+        res.status(200).json({
+            message: "Applicant accepted successfully",
+            application: acceptedApplication,
+            task: updatedTask
+        });
+    } catch (err) {
+        console.error("Error accepting applicant:", err);
+        res.status(500).json({ error: "Failed to accept applicant" });
+    }
+};
+
+module.exports = { submitApplication, getApplicants, acceptApplicant };
