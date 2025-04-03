@@ -85,7 +85,7 @@ const JobDetails = ({ jobId, onClose, show }) => {
                     <div className="mb-3">
                         <h5>Required Powers</h5>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                            {jobDetails.skills.split(",").map((skill, index) => (
+                            {jobDetails.skills.map((skill, index) => (
                                 <span
                                     key={index}
                                     style={{
