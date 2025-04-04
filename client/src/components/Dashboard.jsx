@@ -30,12 +30,24 @@ const Dashboard = (props) => {
       if (Object.keys(user).length) {
          const results = []
          const url = 'http://localhost:5000/api/jobs/'
-         fetch(url)
-         .then(res=>res.json()).then(data => data.map(el => {
-            if (el.creator == user._id) results.push(el) }))
-         .then(() => setTasks(results))
+         
+         if (viewerRole === "Job Poster") {
+            fetch(url)
+            .then(res=>res.json()).then(data => data.map(el => {
+               if (el.creator == user._id) results.push(el) 
+            }))
+            .then(() => setTasks(results))
+         } else if (viewerRole === "Superhero") {
+            fetch(url)
+            .then(res=>res.json())
+            .then(data => {
+               const claimedJobs = data.filter(job => job.claimedBy === userId);
+               setTasks(claimedJobs);
+            })
+            .catch(err => console.error("Error fetching jobs:", err))
+         }
       }      
-   }, [user])
+   }, [user, viewerRole, userId])
 
    if (user.name) {
       return (
@@ -50,7 +62,17 @@ const Dashboard = (props) => {
                   <Stack className='dash-job-panel p-4' direction='vertical' gap={3}>
                      <h2>Track Active Jobs</h2>
                      <Accordion>
-                        { tasks.length ? tasks.map((task, i) => <ActiveJobDash key={i} index={i} id={task._id} title={task.title} status={task.status} />) : null }
+                        { tasks.length ? tasks.map((task, i) => 
+                           <ActiveJobDash 
+                              key={i} 
+                              index={i} 
+                              id={task._id} 
+                              title={task.title} 
+                              status={task.status}
+                              viewerRole={viewerRole}
+                              creatorId={task.creator}
+                           />
+                        ) : null }
                      </Accordion>
                   </Stack>
                   
@@ -65,7 +87,9 @@ const Dashboard = (props) => {
                         <p>{user.profile.bio}</p>
                         <StarRatings rating={user.profile.avgRating} count={user.profile.numReviews}/>
                      </div>
-                     <Button href="/create-job-post" >Create a Job Post</Button>
+                     {viewerRole === "Job Poster" && (
+                        <Button href="/create-job-post">Create a Job Post</Button>
+                     )}
                   </Stack>
                </Col>
             </Row>
