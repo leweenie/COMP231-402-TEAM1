@@ -37,6 +37,16 @@ const getApplicants = async (req, res) => {
     }
 };
 
+const getAllApplications = async (req, res) => {
+    try {
+        const applications = await Application.find().populate("applicant", "name _id");
+        res.json(applications);
+    } catch (err) {
+        console.error("Error getting all applications:", err);
+        res.status(500).json({ error: "Failed to get applications" });
+    }
+};
+
 const acceptApplicant = async (req, res) => {
     try {
         const { taskId, applicantId } = req.params;
@@ -84,4 +94,4 @@ const acceptApplicant = async (req, res) => {
     }
 };
 
-module.exports = { submitApplication, getApplicants, acceptApplicant };
+module.exports = { submitApplication, getApplicants, getAllApplications, acceptApplicant };

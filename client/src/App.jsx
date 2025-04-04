@@ -36,7 +36,7 @@ const App = () => {
     } else {
       document.getElementById('navDetailRef').classList.remove('hide')
       document.getElementById('navRef').innerText = `Viewing as: ${userName}`
-      userName == 'Job Poster' ? setUserId('67e042b2c10084905143d0e7') : setUserId('67e056755de81c089382446e')
+      userName == 'Job Poster' ? setUserId('67e042b2c10084905143d0e7') : setUserId('67df6d7a29672f2fa60393e1')
     }
   }, [userName])
 

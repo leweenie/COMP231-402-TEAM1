@@ -39,12 +39,36 @@ const Dashboard = (props) => {
             .then(() => setTasks(results))
          } else if (viewerRole === "Superhero") {
             fetch(url)
-            .then(res=>res.json())
-            .then(data => {
-               const claimedJobs = data.filter(job => job.claimedBy === userId);
-               setTasks(claimedJobs);
+            .then(res => res.json())
+            .then(allJobs => {
+               fetch(`http://localhost:5000/api/applications/all`)
+               .then(res => res.json())
+               .then(applications => {
+                  const userApplications = applications.filter(app => 
+                     app.applicant && app.applicant._id === userId
+                  );
+                  
+                  if (userApplications.length > 0) {
+                     const applicationStatusMap = {};
+                     userApplications.forEach(app => {
+                        applicationStatusMap[app.task] = app.status;
+                     });
+                     
+                     const appliedJobs = allJobs.filter(job => 
+                        userApplications.some(app => app.task === job._id)
+                     ).map(job => ({
+                        ...job,
+                        applicationStatus: applicationStatusMap[job._id]
+                     }));
+                     
+                     setTasks(appliedJobs);
+                  } else {
+                     setTasks([]);
+                  }
+               })
+               .catch(err => console.error("Error fetching applications:", err));
             })
-            .catch(err => console.error("Error fetching jobs:", err))
+            .catch(err => console.error("Error fetching jobs:", err));
          }
       }      
    }, [user, viewerRole, userId])
@@ -69,13 +93,19 @@ const Dashboard = (props) => {
                               id={task._id} 
                               title={task.title} 
                               status={task.status}
+                              applicationStatus={task.applicationStatus}
                               viewerRole={viewerRole}
                               creatorId={task.creator}
                            />
-                        ) : null }
+                        ) : (
+                           <div className="text-center p-3">
+                              {viewerRole === "Superhero" ? 
+                                 "You haven't applied to any jobs yet." : 
+                                 "You haven't created any jobs yet."}
+                           </div>
+                        )}
                      </Accordion>
                   </Stack>
-                  
                </Col>
                <Col xs={12} sm={4}>
                   <Stack className='dash-profile-panel p-4' direction='vertical' gap={3}>
