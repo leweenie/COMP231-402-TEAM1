@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Accordion from 'react-bootstrap/Accordion';
 import Image from 'react-bootstrap/Image';
-import Badge from 'react-bootstrap/Badge';
 
 import DashApplicantModal from './DashApplicantModal';
 import JobDetails from './JobDetails';
@@ -149,16 +148,24 @@ const ActiveJobDash = (props) => {
             <div className='status' style={{ flex: '1' }}>
                <div className="d-flex align-items-center">
                   <span className="me-2">Status:</span>
-                  <Badge 
-                     bg={getStatusBadgeVariant(status)} 
+                  <span 
+                     className="status-badge"
                      style={{ 
-                        fontSize: '0.85rem', 
+                        display: 'inline-block',
                         padding: '0.4rem 0.7rem',
-                        fontWeight: '500'
+                        fontSize: '0.85rem',
+                        fontWeight: '500',
+                        borderRadius: '0.25rem',
+                        backgroundColor: getStatusBadgeVariant(status) === 'warning' ? '#ffc107' : 
+                                        getStatusBadgeVariant(status) === 'success' ? '#106cfc' : 
+                                        getStatusBadgeVariant(status) === 'danger' ? '#dc3545' : 
+                                        getStatusBadgeVariant(status) === 'info' ? '#ffb444' : 
+                                        getStatusBadgeVariant(status) === 'primary' ? '#0d6efd' : '#6c757d',
+                        color: getStatusBadgeVariant(status) === 'warning' ? '#000' : '#fff'
                      }}
                   >
                      {status.toUpperCase()}
-                  </Badge>
+                  </span>
                </div>
             </div>
             
