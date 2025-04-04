@@ -23,9 +23,17 @@ const ActiveJobDash = (props) => {
          if (viewerRole === "Job Poster") {
             const url = `http://localhost:5000/api/applications/${id}`
             fetch(url)
-            .then(res=>res.json())
+            .then(res => {
+               if (!res.ok) {
+                  if (res.status === 404) {
+                     return []; // Return empty array for 404
+                  }
+                  throw new Error(`HTTP error! status: ${res.status}`);
+               }
+               return res.json();
+            })
             .then(data => {
-               setApplicants(data);
+               setApplicants(Array.isArray(data) ? data : []);
                
                const accepted = data.find(app => app.status === "accepted");
                if (accepted) {
@@ -37,7 +45,10 @@ const ActiveJobDash = (props) => {
                      .catch(err => console.error("Error fetching accepted applicant details:", err));
                }
             })
-            .catch(err => console.error("Error fetching applicants:", err));
+            .catch(err => {
+               console.error("Error fetching applicants:", err);
+               setApplicants([]); // Set empty array on error
+            });
          } else if (viewerRole === "Superhero" && creatorId) {
             fetch(`http://localhost:5000/api/users/${creatorId}`)
                .then(res => res.json())
