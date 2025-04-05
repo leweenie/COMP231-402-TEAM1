@@ -18,7 +18,7 @@ const Dashboard = (props) => {
    const { userId, viewerRole } = props;
    const [tasks, setTasks] = useState([]);
    const [user, setUser] = useState({});
-   const [jobHistory, setJobHistory] = useState([]); 
+   const [jobHistory, setJobHistory] = useState([]);
    const [showHistoryModal, setShowHistoryModal] = useState(false); 
    const [isLoading, setIsLoading] = useState(false); 
 
@@ -30,25 +30,55 @@ const Dashboard = (props) => {
       }
    }, [userId]);
 
-   useEffect(() => {
-      if (Object.keys(user).length) {
-         const results = []
-         const url = 'http://localhost:5000/api/jobs/'
-         fetch(url)
-         .then(res=>res.json()).then(data => data.map(el => {
-            if (el.creator == user._id) results.push(el);
-         }))
-         .then(() => setTasks(results))
-      }      
-   }, [user]);
-
    const fetchJobHistory = () => {
       setIsLoading(true);
       fetch('http://localhost:5000/api/jobs')
          .then(res => res.json())
          .then(data => {
-            const history = data.filter(job => job.creator === user._id && (job.status === "completed" || job.status === "inactive"));
-            setJobHistory(history);
+            let history;
+            if (viewerRole === "Job Poster") {
+               history = data.filter(job => 
+                  job.creator === user._id && 
+                  (job.status === "completed" || job.status === "inactive")
+               );
+               setJobHistory(history);
+               setIsLoading(false);
+            } else if (viewerRole === "Superhero") {
+               fetch(`http://localhost:5000/api/applications/all`)
+                  .then(res => res.json())
+                  .then(applications => {
+                     const userApplications = applications.filter(app => 
+                        app.applicant && app.applicant._id === userId
+                     );
+                     
+                     const applicationStatusMap = {};
+                     userApplications.forEach(app => {
+                        applicationStatusMap[app.task] = app.status;
+                     });
+                     
+                     const completedJobs = data.filter(job => 
+                        job.status === "completed" && 
+                        userApplications.some(app => app.task === job._id)
+                     ).map(job => ({
+                        ...job,
+                        applicationStatus: applicationStatusMap[job._id]
+                     }));
+                     
+                     setJobHistory(completedJobs);
+                     setIsLoading(false);
+                  })
+                  .catch(err => {
+                     console.error("Error fetching applications:", err);
+                     setIsLoading(false);
+                  });
+            } else {
+               history = [];
+               setJobHistory(history);
+               setIsLoading(false);
+            }
+         })
+         .catch(err => {
+            console.error("Error fetching jobs:", err);
             setIsLoading(false);
          });
    };
@@ -57,6 +87,61 @@ const Dashboard = (props) => {
       fetchJobHistory();  
       setShowHistoryModal(true); 
    };
+
+   useEffect(() => {
+      if (Object.keys(user).length) {
+         const url = 'http://localhost:5000/api/jobs/'
+         
+         if (viewerRole === "Job Poster") {
+            fetch(url)
+            .then(res=>res.json())
+            .then(data => {
+               const activeTasks = data.filter(job => 
+                  job.creator === user._id && 
+                  job.status !== "completed" && 
+                  job.status !== "inactive"
+               );
+               setTasks(activeTasks);
+            })
+            .catch(err => console.error("Error fetching jobs:", err));
+         } else if (viewerRole === "Superhero") {
+            fetch(url)
+            .then(res => res.json())
+            .then(allJobs => {
+               fetch(`http://localhost:5000/api/applications/all`)
+               .then(res => res.json())
+               .then(applications => {
+                  const userApplications = applications.filter(app => 
+                     app.applicant && app.applicant._id === userId
+                  );
+                  
+                  if (userApplications.length > 0) {
+                     const applicationStatusMap = {};
+                     userApplications.forEach(app => {
+                        applicationStatusMap[app.task] = app.status;
+                     });
+                     
+                     const appliedJobs = allJobs
+                        .filter(job => 
+                           userApplications.some(app => app.task === job._id) &&
+                           job.status !== "completed"
+                        )
+                        .map(job => ({
+                           ...job,
+                           applicationStatus: applicationStatusMap[job._id]
+                        }));
+                     
+                     setTasks(appliedJobs);
+                  } else {
+                     setTasks([]);
+                  }
+               })
+               .catch(err => console.error("Error fetching applications:", err));
+            })
+            .catch(err => console.error("Error fetching jobs:", err));
+         }
+      }      
+   }, [user, viewerRole, userId])
 
    if (user.name) {
       return (
@@ -71,9 +156,24 @@ const Dashboard = (props) => {
                   <Stack className='dash-job-panel p-4' direction='vertical' gap={3}>
                      <h2>Track Active Jobs</h2>
                      <Accordion>
-                        {tasks.length ? tasks.map((task, i) => (
-                           <ActiveJobDash key={i} index={i} id={task._id} title={task.title} status={task.status} />
-                        )) : null}
+                        { tasks.length ? tasks.map((task, i) => 
+                           <ActiveJobDash 
+                              key={i} 
+                              index={i} 
+                              id={task._id} 
+                              title={task.title} 
+                              status={task.status}
+                              applicationStatus={task.applicationStatus}
+                              viewerRole={viewerRole}
+                              creatorId={task.creator}
+                           />
+                        ) : (
+                           <div className="text-center p-3">
+                              {viewerRole === "Superhero" ? 
+                                 "You haven't applied to any active jobs." : 
+                                 "You don't have any active jobs."}
+                           </div>
+                        )}
                      </Accordion>
                      <Button onClick={handleJobHistoryClick}>Job History</Button> 
                   </Stack>
@@ -88,7 +188,9 @@ const Dashboard = (props) => {
                         <p>{user.profile.bio}</p>
                         <StarRatings rating={user.profile.avgRating} count={user.profile.numReviews} />
                      </div>
-                     <Button href="/create-job-post">Create a Job Post</Button>
+                     {viewerRole === "Job Poster" && (
+                        <Button href="/create-job-post">Create a Job Post</Button>
+                     )}
                   </Stack>
                </Col>
             </Row>

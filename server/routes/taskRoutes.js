@@ -20,5 +20,6 @@ router.get("/", getAllTasks);
 router.get("/board", getAllTasksSorted);
 router.get("/:id", getTaskByID);
 router.patch("/:id/progress", updateTaskStatus);
+router.patch("/complete/:id", updateTaskStatus);
 
 module.exports = router;

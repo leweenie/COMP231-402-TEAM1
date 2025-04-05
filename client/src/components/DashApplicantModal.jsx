@@ -8,17 +8,21 @@ const DashApplicantModal = (props) => {
    const [applicantDetails, setApplicantDetails] = useState([])
 
    useEffect(() => {
-      if (applicants) {
+      if (applicants && Array.isArray(applicants) && applicants.length > 0) {
          const fetchApplicantDetails = async () => {
             const results = []
             for (const applicant of applicants) {
-               const response = await fetch(`http://localhost:5000/api/users/${applicant.applicant._id}`)
-               const data = await response.json()
-               results.push(data)
+               if (applicant && applicant.applicant && applicant.applicant._id) {
+                  const response = await fetch(`http://localhost:5000/api/users/${applicant.applicant._id}`)
+                  const data = await response.json()
+                  results.push(data)
+               }
             }
             setApplicantDetails(results)
          }
          fetchApplicantDetails()
+      } else {
+         setApplicantDetails([])
       }
    }, [applicants])
 
