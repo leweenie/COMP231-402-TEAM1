@@ -14,6 +14,7 @@ import CreateJobForm from './components/CreateJobForm';
 import Dashboard from './components/Dashboard';
 
 import UserProfile from './components/UserProfile';
+import DisplayApplicantProfile from './components/DisplayApplicantProfile';
 
 const Layout = ({ children }) => (
   <Stack className="home-layout" direction="vertical" gap={0}>
@@ -48,7 +49,7 @@ const App = () => {
         <Route path="/job-board" element={<Layout><JobBoard userId={userId} viewerRole={userName} /></Layout>} />
         <Route path="/profile" element={<Layout><UserProfile userId={userId} /></Layout>} />
         <Route path="/create-job-post" element={<Layout><CreateJobForm /></Layout>} />
-        <Route path="/user/:id" element={<Layout><UserProfile userId={userId} viewerRole={userName} /></Layout>} />
+        <Route path="/user/:id" element={<Layout><DisplayApplicantProfile /></Layout>} />
       </Routes>
     </Router>
   );
