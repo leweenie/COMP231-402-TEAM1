@@ -13,7 +13,7 @@ const DisplayApplicantProfile = () => {
          <Container fluid className='p-2 return-outer d-flex justify-content-center'>
             <Row className='p-2 return-inner flex-grow-1'>
                <Col>
-                  <Link to={'/dashboard'}>&larr; Return to Dashboard</Link>
+                  <Link to={'/dashboard'}>&larr; Return to My Dashboard</Link>
                </Col>
             </Row>
          </Container>

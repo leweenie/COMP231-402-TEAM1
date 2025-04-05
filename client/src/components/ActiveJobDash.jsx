@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router'
 
 import Button from 'react-bootstrap/Button';
 import Accordion from 'react-bootstrap/Accordion';
@@ -193,7 +194,7 @@ const ActiveJobDash = (props) => {
                               roundedCircle 
                               style={{ width: '30px', height: '30px', objectFit: 'cover' }}
                            />
-                           <span>{acceptedApplicant.name}</span>
+                           <Link to={`/user/${acceptedApplicant._id}`}><span>{acceptedApplicant.name}</span></Link>
                         </div>
                      </div>
                   ) : (

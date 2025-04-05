@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router'
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
@@ -101,7 +102,12 @@ const JobDetails = ({ jobId, onClose, show }) => {
           </div>
         )}
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className='d-flex align-items-center justify-content-between'>
+        <Link to={`/user/${jobDetails.creator}`}>
+            <Button className="p-2" size="sm" variant="secondary">
+              View Job Poster Profile
+            </Button>
+        </Link>
         <Button variant="primary" onClick={onClose}>
           Close
         </Button>
