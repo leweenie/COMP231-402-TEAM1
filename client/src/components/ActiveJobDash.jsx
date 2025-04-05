@@ -136,7 +136,7 @@ const ActiveJobDash = (props) => {
             <div 
                className="status-indicator" 
                style={{ 
-                  display: 'none',
+                  display: 'block',
                   padding: '0.5rem',
                   textAlign: 'center',
                   backgroundColor: applicationStatus === 'pending' ? '#fff3cd' : 
