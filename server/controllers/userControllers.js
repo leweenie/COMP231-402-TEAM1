@@ -11,6 +11,46 @@ const createUser = async (req, res) => {
     }
 };
 
+const updateUser = async(req, res) => {
+    const { id } = req.params;
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true, runValidators: true }  
+        );
+
+        if(!updatedUser) {
+            return res.status(404).json({error: "Could not find the user for this ID."});
+        }
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        res.status(400).json({ error: "User cannot be updated."})
+        console.error("Error updating:", err.message)
+    }
+};
+
+const addFavourite = async(req, res) => {
+    const { id, favouriteid } = req.params;
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate (
+            id,
+            { $addToSet: {favourites: favouriteid}},
+            { new: true, runValidators: true }
+        );
+
+        if(!updatedUser) {
+            return res.status(404).json({error: "Could not find the user for this ID."});
+        }
+        res.status(200).json(updatedUser)
+    } catch(err) {
+        res.status(400).json({ error: "User cannot be updated with a new favourite. Please try again."})
+        console.error("Error updating:", err.message)
+    }
+}
+
 const getUserByID = async(req, res) => {
     const { id } = req.params;
 
@@ -26,4 +66,4 @@ const getUserByID = async(req, res) => {
     }
 }
 
-module.exports = { createUser, getUserByID };
+module.exports = { createUser, updateUser, addFavourite, getUserByID };
