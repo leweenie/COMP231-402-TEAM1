@@ -41,6 +41,8 @@ const Dashboard = (props) => {
                   job.creator === user._id && 
                   (job.status === "completed" || job.status === "inactive")
                );
+               setJobHistory(history);
+               setIsLoading(false);
             } else if (viewerRole === "Superhero") {
                fetch(`http://localhost:5000/api/applications/all`)
                   .then(res => res.json())
@@ -49,21 +51,34 @@ const Dashboard = (props) => {
                         app.applicant && app.applicant._id === userId
                      );
                      
+                     const applicationStatusMap = {};
+                     userApplications.forEach(app => {
+                        applicationStatusMap[app.task] = app.status;
+                     });
+                     
                      const completedJobs = data.filter(job => 
                         job.status === "completed" && 
                         userApplications.some(app => app.task === job._id)
-                     );
+                     ).map(job => ({
+                        ...job,
+                        applicationStatus: applicationStatusMap[job._id]
+                     }));
                      
                      setJobHistory(completedJobs);
+                     setIsLoading(false);
                   })
-                  .catch(err => console.error("Error fetching applications:", err));
+                  .catch(err => {
+                     console.error("Error fetching applications:", err);
+                     setIsLoading(false);
+                  });
             } else {
                history = [];
-            }
-            
-            if (viewerRole === "Job Poster") {
                setJobHistory(history);
+               setIsLoading(false);
             }
+         })
+         .catch(err => {
+            console.error("Error fetching jobs:", err);
             setIsLoading(false);
          });
    };

@@ -156,29 +156,31 @@ const ActiveJobDash = (props) => {
          )}
 
          <Accordion.Body className='dash-job-body' style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <div className='status' style={{ flex: '1' }}>
-               <div className="d-flex align-items-center">
-                  <span className="me-2">Status:</span>
-                  <span 
-                     className="status-badge"
-                     style={{ 
-                        display: 'inline-block',
-                        padding: '0.4rem 0.7rem',
-                        fontSize: '0.85rem',
-                        fontWeight: '500',
-                        borderRadius: '0.25rem',
-                        backgroundColor: getStatusBadgeVariant(status) === 'warning' ? '#ffc107' : 
-                                        getStatusBadgeVariant(status) === 'success' ? '#106cfc' : 
-                                        getStatusBadgeVariant(status) === 'danger' ? '#dc3545' : 
-                                        getStatusBadgeVariant(status) === 'info' ? '#ffb444' : 
-                                        getStatusBadgeVariant(status) === 'primary' ? '#0d6efd' : '#6c757d',
-                        color: getStatusBadgeVariant(status) === 'warning' ? '#000' : '#fff'
-                     }}
-                  >
-                     {status.toUpperCase()}
-                  </span>
+            {applicationStatus !== 'rejected' && (
+               <div className='status' style={{ flex: '1' }}>
+                  <div className="d-flex align-items-center">
+                     <span className="me-2">Status:</span>
+                     <span 
+                        className="status-badge"
+                        style={{ 
+                           display: 'inline-block',
+                           padding: '0.4rem 0.7rem',
+                           fontSize: '0.85rem',
+                           fontWeight: '500',
+                           borderRadius: '0.25rem',
+                           backgroundColor: getStatusBadgeVariant(status) === 'warning' ? '#ffc107' : 
+                                           getStatusBadgeVariant(status) === 'success' ? '#106cfc' : 
+                                           getStatusBadgeVariant(status) === 'danger' ? '#dc3545' : 
+                                           getStatusBadgeVariant(status) === 'info' ? '#ffb444' : 
+                                           getStatusBadgeVariant(status) === 'primary' ? '#0d6efd' : '#6c757d',
+                           color: getStatusBadgeVariant(status) === 'warning' ? '#000' : '#fff'
+                        }}
+                     >
+                        {status.toUpperCase()}
+                     </span>
+                  </div>
                </div>
-            </div>
+            )}
             
             {viewerRole === "Job Poster" ? (
                <div className='applicants' style={{ flex: '2', textAlign: 'center' }}>
