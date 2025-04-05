@@ -12,11 +12,15 @@ import DashApplicantModal from './DashApplicantModal';
 import StarRatings from './StarRatings';
 import ActiveJobDash from './ActiveJobDash'
 import Notifications from './Notifications';
+import JobHistoryModal from './JobHistoryModal'; 
 
 const Dashboard = (props) => { 
    const { userId, viewerRole } = props;
-   const [tasks, setTasks] = useState([])
-   const [user, setUser] = useState({})
+   const [tasks, setTasks] = useState([]);
+   const [user, setUser] = useState({});
+   const [jobHistory, setJobHistory] = useState([]);
+   const [showHistoryModal, setShowHistoryModal] = useState(false); 
+   const [isLoading, setIsLoading] = useState(false); 
 
    useEffect(() => {
       if (userId) {
@@ -25,6 +29,22 @@ const Dashboard = (props) => {
          .then(res=>res.json()).then(data => setUser(data))
       }
    }, [userId])
+
+   const fetchJobHistory = () => {
+      setIsLoading(true);
+      fetch('http://localhost:5000/api/jobs')
+         .then(res => res.json())
+         .then(data => {
+            const history = data.filter(job => job.creator === user._id && (job.status === "completed" || job.status === "inactive"));
+            setJobHistory(history);
+            setIsLoading(false);
+         });
+   };
+
+   const handleJobHistoryClick = () => {
+      fetchJobHistory();  
+      setShowHistoryModal(true); 
+   };
 
    useEffect(() => {
       if (Object.keys(user).length) {
@@ -105,6 +125,7 @@ const Dashboard = (props) => {
                            </div>
                         )}
                      </Accordion>
+                     <Button onClick={handleJobHistoryClick}>Job History</Button> 
                   </Stack>
                </Col>
                <Col xs={12} sm={4}>
@@ -123,8 +144,16 @@ const Dashboard = (props) => {
                   </Stack>
                </Col>
             </Row>
+            <JobHistoryModal 
+               show={showHistoryModal} 
+               onHide={() => setShowHistoryModal(false)} 
+               jobs={jobHistory} 
+               isLoading={isLoading} 
+            />
          </Container>
       )
    }
+
+   return null;
 }
 export default Dashboard
