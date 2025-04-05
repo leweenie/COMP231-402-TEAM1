@@ -35,8 +35,35 @@ const Dashboard = (props) => {
       fetch('http://localhost:5000/api/jobs')
          .then(res => res.json())
          .then(data => {
-            const history = data.filter(job => job.creator === user._id && (job.status === "completed" || job.status === "inactive"));
-            setJobHistory(history);
+            let history;
+            if (viewerRole === "Job Poster") {
+               history = data.filter(job => 
+                  job.creator === user._id && 
+                  (job.status === "completed" || job.status === "inactive")
+               );
+            } else if (viewerRole === "Superhero") {
+               fetch(`http://localhost:5000/api/applications/all`)
+                  .then(res => res.json())
+                  .then(applications => {
+                     const userApplications = applications.filter(app => 
+                        app.applicant && app.applicant._id === userId
+                     );
+                     
+                     const completedJobs = data.filter(job => 
+                        job.status === "completed" && 
+                        userApplications.some(app => app.task === job._id)
+                     );
+                     
+                     setJobHistory(completedJobs);
+                  })
+                  .catch(err => console.error("Error fetching applications:", err));
+            } else {
+               history = [];
+            }
+            
+            if (viewerRole === "Job Poster") {
+               setJobHistory(history);
+            }
             setIsLoading(false);
          });
    };
@@ -48,15 +75,20 @@ const Dashboard = (props) => {
 
    useEffect(() => {
       if (Object.keys(user).length) {
-         const results = []
          const url = 'http://localhost:5000/api/jobs/'
          
          if (viewerRole === "Job Poster") {
             fetch(url)
-            .then(res=>res.json()).then(data => data.map(el => {
-               if (el.creator == user._id) results.push(el) 
-            }))
-            .then(() => setTasks(results))
+            .then(res=>res.json())
+            .then(data => {
+               const activeTasks = data.filter(job => 
+                  job.creator === user._id && 
+                  job.status !== "completed" && 
+                  job.status !== "inactive"
+               );
+               setTasks(activeTasks);
+            })
+            .catch(err => console.error("Error fetching jobs:", err));
          } else if (viewerRole === "Superhero") {
             fetch(url)
             .then(res => res.json())
@@ -74,12 +106,15 @@ const Dashboard = (props) => {
                         applicationStatusMap[app.task] = app.status;
                      });
                      
-                     const appliedJobs = allJobs.filter(job => 
-                        userApplications.some(app => app.task === job._id)
-                     ).map(job => ({
-                        ...job,
-                        applicationStatus: applicationStatusMap[job._id]
-                     }));
+                     const appliedJobs = allJobs
+                        .filter(job => 
+                           userApplications.some(app => app.task === job._id) &&
+                           job.status !== "completed"
+                        )
+                        .map(job => ({
+                           ...job,
+                           applicationStatus: applicationStatusMap[job._id]
+                        }));
                      
                      setTasks(appliedJobs);
                   } else {
@@ -120,8 +155,8 @@ const Dashboard = (props) => {
                         ) : (
                            <div className="text-center p-3">
                               {viewerRole === "Superhero" ? 
-                                 "You haven't applied to any jobs yet." : 
-                                 "You haven't created any jobs yet."}
+                                 "You haven't applied to any active jobs." : 
+                                 "You don't have any active jobs."}
                            </div>
                         )}
                      </Accordion>
