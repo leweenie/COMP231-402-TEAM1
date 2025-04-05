@@ -39,7 +39,7 @@ const getAllTasksSorted = async (req, res) => {
 
         // Filter by skills
         if (skills) {
-            const skillsArray = skills.split(",");
+            const skillsArray = skills.split(",").map(decodeURIComponent);
             query.skills = { $in: skillsArray };
         }
 
