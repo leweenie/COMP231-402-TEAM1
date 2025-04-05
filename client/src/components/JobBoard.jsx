@@ -18,8 +18,11 @@ const JobBoard = (props) => {
   const [jobApplicants, setJobApplicants] = useState({});
   const [showJobDetails, setShowJobDetails] = useState(false);
 
+  // Variable for displaying a message before fetchJobs has completed
+  const [loading, setLoading] = useState(false);
+
   // Variable for displaying a message when no jobs are available
-  const [noJobsMessage, setNoJobsMessage] = useState('');
+  const [fetchJobsStatusMessage, setFetchJobsStatusMessage] = useState('');
 
   // Variables for URL query for filtering params
   const [searchField, setSearchField] = useState('');
@@ -29,12 +32,23 @@ const JobBoard = (props) => {
   // Toggle for showing/hiding the filter UI  
   const [showExtraFilters, setShowExtraFilters] = useState(false);
 
-  useEffect(() => {
+  const [filtersCleared, setFiltersCleared] = useState(false);
 
+  // Call fetchJobs upon initial render (component mount)
+  useEffect(() => {
     fetchJobs();
-  }, [locationField, searchField, selectedPowers]);
+  }, []);
+
+  // Trigger a re-fetch of jobs only when filters are cleared via Clear Filters button
+  useEffect(() => {
+    if (filtersCleared) {
+      fetchJobs();
+      setFiltersCleared(false);
+    }
+  }, [filtersCleared]);
 
   const fetchJobs = async () => {
+    setLoading(true);
     // Compose params query for filtering
     const searchQuery = encodeURIComponent(searchField);
     const locationQuery = encodeURIComponent(locationField);
@@ -50,9 +64,11 @@ const JobBoard = (props) => {
       queryParams.append("skills", powersQuery);
     }
 
-    // Call backend to retrieve list of jobs, 
-    // sorted by status = active and lastest date,
-    // filtered by title/description, location, and/or powers
+    /* 
+    Call backend to retrieve list of jobs, 
+    sorted by status = active and lastest date,
+    filtered by title/description, location, and/or powers 
+    */
     try {
       const response = await fetch(`http://localhost:5000/api/jobs/board?${queryParams.toString()}`, {
         method: 'GET',
@@ -75,10 +91,10 @@ const JobBoard = (props) => {
           applicants[task._id] = task.applicants || [];
         });
         setJobApplicants(applicants);
-        setNoJobsMessage('');
+        setFetchJobsStatusMessage('');
       } else {
         setTasks([]);
-        setNoJobsMessage('No jobs available');
+        setFetchJobsStatusMessage('No jobs available');
       }
     } catch (error) {
       console.error('Error fetching jobs from server:', error);
@@ -86,11 +102,11 @@ const JobBoard = (props) => {
       const mockCreators = generateMockJobPosters(5);
       const mockTasks = generateMockTasks(mockCreators, 5)
       setTasks(mockTasks);
-      setNoJobsMessage('Server unavailable. Showing mock jobs.');
+      setFetchJobsStatusMessage('Server unavailable. Showing mock jobs.');
+    } finally {
+      setLoading(false);
     }
   };
-
-
 
   const handleApply = (jobId) => {
     setAppliedJobs((prev) => ({ ...prev, [jobId]: 'Application Pending' }));
@@ -107,19 +123,19 @@ const JobBoard = (props) => {
     setSelectedJobId(null);
   };
 
-  const handlePowerChange = (power) => {
-    if (selectedPowers.includes(power)) {
-      setSelectedPowers(selectedPowers.filter(item => item !== power));
-    } else {
-      setSelectedPowers([...selectedPowers, power]);
-    }
-  };
-
-  // Parse for image URL, else fallback to dummy image
+  // Parse for image in job, else fallback to dummy image
   const getThumbnail = (image, title) =>
     image && image.trim() !== ''
       ? image
       : `https://dummyimage.com/100x100/97ddf7/000.jpg&text=${encodeURIComponent(title)}`;
+
+  // Reset all filter fields and trigger fetch jobs again via filtersCleared flag
+  const clearFilters = () => {
+    setSearchField('');
+    setLocationField('');
+    setSelectedPowers([]);
+    setFiltersCleared(true);
+  };
 
   return (
     <Container className="p-4 temp-border">
@@ -130,12 +146,13 @@ const JobBoard = (props) => {
 
       <Row className="mb-3">
         <Col xs={12}>
+        {/* Toggle visibility of the filter UI. */}
           <Button variant="primary" onClick={() => setShowExtraFilters(!showExtraFilters)}>
             {showExtraFilters ? 'Hide Filters' : 'Add Filter'}
           </Button>
         </Col>
       </Row>
-      
+
       {showExtraFilters && (
         <>
           <Row className="mb-3">
@@ -160,43 +177,54 @@ const JobBoard = (props) => {
               </Form.Group>
             </Col>
             <Col xs={12} md={4}>
-            <Form.Group controlId="powerFilterDropdown">
-              <Form.Label>Filter by Super Power</Form.Label>
-              <InputGroup>
-                <Form.Select
-                  multiple
-                  value={selectedPowers}
-                  style={{ height: '75px' }}
-                  onChange={(e) => {
-                    const options = Array.from(e.target.selectedOptions, option => option.value);
-                    setSelectedPowers(options);
-                  }}
-                >
-                  <option value="telekinesis">Telekinesis</option>
-                  <option value="super strength">Super Strength</option>
-                  <option value="xray vision">X-Ray Vision</option>
-                </Form.Select>
-                <Button variant="outline-secondary" onClick={() => setSelectedPowers([])}>
-                  Clear
-                </Button>
-              </InputGroup>
-            </Form.Group>
-          </Col>
+              <Form.Group controlId="powerFilterDropdown">
+                <Form.Label>Filter by Super Power</Form.Label>
+                <InputGroup>
+                  <Form.Select
+                    multiple
+                    value={selectedPowers}
+                    style={{ height: '75px' }}
+                    onChange={(e) => {
+                      const options = Array.from(e.target.selectedOptions, option => option.value);
+                      setSelectedPowers(options);
+                    }}
+                  >
+                    <option value="Telekinesis">Telekinesis</option>
+                    <option value="Super Strength">Super Strength</option>
+                    <option value="X-ray Vision">X-ray Vision</option>
+                  </Form.Select>
+                  <Button variant="outline-secondary" onClick={() => setSelectedPowers([])}>
+                    Clear
+                  </Button>
+                </InputGroup>
+              </Form.Group>
+            </Col>
           </Row>
           <Row className="mb-3">
             <Col>
-              <Button variant="secondary" onClick={fetchJobs}>
-                Apply Filters
-              </Button>
+              <div className="d-flex gap-4">
+                <Button variant="primary" onClick={fetchJobs}>
+                  Apply Filters
+                </Button>
+                <Button variant="primary" onClick={clearFilters}>
+                  Clear Filters
+                </Button>
+              </div>
             </Col>
           </Row>
         </>
       )}
 
       <Row>
-        {tasks.length === 0 && (
+        {loading && (
           <Col xs={12}>
-            <div className="text-center text-muted mb-4">No jobs available</div>
+            <div className="text-center text-primary mb-4">Loading jobs...</div>
+          </Col>
+        )}
+
+        {!loading && fetchJobsStatusMessage && (
+          <Col xs={12}>
+            <div className="text-center text-muted mb-4">{fetchJobsStatusMessage}</div>
           </Col>
         )}
 
@@ -217,6 +245,7 @@ const JobBoard = (props) => {
               <p className="text-muted">{task.location}</p>
               <p style={{ fontSize: '0.9rem' }}>{task.description}</p>
               <div className="d-flex justify-content-center gap-2 mt-3">
+                {/* Show Apply button only for Superhero role, and disable it if already applied. */}
                 {viewerRole === 'Superhero' && (
                   appliedJobs[task._id] ? (
                     <Button variant="success" size="sm" disabled>
@@ -240,14 +269,13 @@ const JobBoard = (props) => {
         ))}
       </Row>
 
-
       {showJobDetails && selectedJobId && (
         <JobDetails
           jobId={selectedJobId}
           onClose={handleCloseJobDetails}
           show={showJobDetails}
         />
-      )};
+      )}
 
       <ApplicantsModal
         show={showApplicants}
