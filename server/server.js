@@ -5,6 +5,7 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoutes.js")
 const taskRoutes = require("./routes/taskRoutes.js")
 const applicationRoutes = require("./routes/applicationRoutes.js")
+const reviewRoutes = require("./routes/reviewRoutes.js")
 
 
 dotenv.config(); 
@@ -25,6 +26,7 @@ mongoose.connect(process.env.MONGO_URI)
   app.use("/api/users", userRoutes);
   app.use("/api/jobs", taskRoutes);
   app.use("/api/applications", applicationRoutes);
+  app.use("/api/reviews", reviewRoutes);
 
 
   

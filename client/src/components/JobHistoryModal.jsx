@@ -1,14 +1,21 @@
 import { useState } from 'react';
 import { Modal, Button, ListGroup, Spinner } from 'react-bootstrap';
 import JobDetails from './JobDetails'; 
+import { useNavigate } from 'react-router-dom';
 
-const JobHistoryModal = ({ show, onHide, jobs, isLoading }) => {
+const JobHistoryModal = ({ show, onHide, jobs, isLoading, viewerRole }) => {
    const [selectedJobId, setSelectedJobId] = useState(null);
    const [showJobDetails, setShowJobDetails] = useState(false);
+   const navigate = useNavigate();
 
    const handleViewJob = (jobId) => {
       setSelectedJobId(jobId);
       setShowJobDetails(true);
+   };
+   
+   const handleProfileClick = (userId, jobId) => {
+      navigate(`/user/${userId}?taskId=${jobId}`);
+      onHide();
    };
    
    const getStatusBadgeVariant = (status) => {
@@ -42,6 +49,28 @@ const JobHistoryModal = ({ show, onHide, jobs, isLoading }) => {
                         jobs.map((job) => (
                            <ListGroup.Item key={job._id}>
                               <h5>{job.title}</h5>
+                              {viewerRole === "Superhero" && job.creator && (
+                                 <div className="my-2">
+                                    <Button 
+                                       variant="link" 
+                                       className="p-0" 
+                                       onClick={() => handleProfileClick(job.creator, job._id)}
+                                    >
+                                       Leave a Review for Poster!
+                                       </Button>
+                                 </div>
+                              )}
+                              {viewerRole === "Job Poster" && job.claimedBy && (
+                                 <div className="my-2">
+                                    <Button 
+                                       variant="link" 
+                                       className="p-0" 
+                                       onClick={() => handleProfileClick(job.claimedBy, job._id)}
+                                    >
+                                       Leave a Review for Superhero!
+                                    </Button>
+                                 </div>
+                              )}
                               {job.applicationStatus !== 'rejected' && (
                                 <div className="d-flex align-items-center my-2">
                                    <span className="me-2">Status:</span>
