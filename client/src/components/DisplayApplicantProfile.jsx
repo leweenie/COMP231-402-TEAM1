@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -7,13 +7,15 @@ import Col from 'react-bootstrap/Col';
 import UserProfile from './UserProfile';
 
 const DisplayApplicantProfile = () => {
+   const nav = useNavigate()
    const applicantId = useParams().id
    return (
       <>
          <Container fluid className='p-2 return-outer d-flex justify-content-center'>
             <Row className='p-2 return-inner flex-grow-1'>
                <Col>
-                  <Link to={'/dashboard'}>&larr; Return to My Dashboard</Link>
+                  <p onClick={() => nav(-1)}>&larr; Go Back</p>
+                  {/* <Link to={'/dashboard'}>&larr; Return to My Dashboard</Link> */}
                </Col>
             </Row>
          </Container>

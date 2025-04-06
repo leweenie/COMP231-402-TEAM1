@@ -67,23 +67,24 @@
 }
 
 .profile-picture {
-  height: 200px;
-  width: 200px;
+  height: 170px;
+  width: 170px;
 }
 
-.dash-profile-panel,
-.dash-job-panel {
+.dash-profile-panel, .dash-job-panel, .profile-review-panel, .profile-fave-panel {
   background-color: #fff;
-  /* -webkit-box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.2);
-  -moz-box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.2);
-  box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.2); */
+  border: 1px solid #ddd;
+  border-radius: 10px;
   justify-content: flex-start;
   align-items: center;
-  /* flex: 1 1 auto; */
 }
 
-.dash-job-panel h2 {
-  font-size: 24px;
+h2 {
+  font-size: 24px !important;
+}
+
+h3 {
+  font-size: 20px !important;
 }
 
 .dash-job-panel .accordion {
@@ -151,13 +152,15 @@
 .return-inner {
   max-width: 1320px;
 }
-.return-inner a {
+.return-inner p {
   color: #000;
   font-weight: 600;
   text-decoration: none;
+  cursor: pointer;
 }
-.return-inner a:hover {
+.return-inner p:hover {
   color: #1c75bc;
+  text-decoration: underline;
 }
 
 /* BootStraps Colour Override */
@@ -176,4 +179,32 @@
 .btn:hover.btn-secondary {
   background: #f49d1b;
   border-color: #f49d1b;
+}
+
+.user-bio-box {
+  text-align: center;
+}
+
+.review-container{
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 15px;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+.review-text {
+  display: flex;
+  justify-content: stretch;
+  flex: 5;
+  flex-flow: column nowrap;
+}
+.review-image {
+  flex: 1;
+}
+.review-text div {
+  justify-content: space-between;
+}
+.review-image .profile-picture {
+  width: 70px;
+  height: 70px;
 }

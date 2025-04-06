@@ -1,48 +1,104 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router'
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Image, { propTypes } from 'react-bootstrap/Image';
+import Stack from 'react-bootstrap/esm/Stack';
+import Button from 'react-bootstrap/Button';
+import { heroReviews, posterReviews} from './../utils/temp-reviews'
 
 const UserProfile = (props) => {
-    const {userId} = props;
+    const {userId, viewerRole} = props;
 
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
+    const [userReviews, setUserReviews] = useState()
 
     const updateProfile = () => {
         console.log("Update Profile Clicked!");
     };
 
     useEffect(() => {
-        console.log("useEffect is running...");
-        fetch(`http://localhost:5000/api/users/${userId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Fetched user:", data); // Debugging line
-                setUser(data);
-            })
-            .catch(error => {
-                console.error("Error fetching user:", error);
-                setError(error.message);
-            });
-    }, []);
+        if (userId) {
+           const url = `http://localhost:5000/api/users/${userId}`
+           fetch(url)
+           .then(res=>res.json()).then(data => setUser(data))
+        }
+     }, [userId])
+
+    useEffect(() => {
+        if (userId) {
+            const reviews = userId == '67e056755de81c089382446e' ? heroReviews : posterReviews
+            for (const review of reviews) {
+                const url = `http://localhost:5000/api/users/${review.reviewer._id}`
+                fetch(url)
+                .then(res=>res.json()).then(data => review.reviewer = data)
+            }
+            console.log(reviews)
+            setUserReviews(reviews)
+         }
+    }, [userId])
 
     if (error) return <p>Error: {error}</p>;
     if (!user) return <p>Loading user data...</p>;
 
     return (
-        <div style={styles.container}>
-            <img src={user.profile.image || "https://www.w3schools.com/w3images/avatar2.png"} alt="Profile" style={styles.image} />
-            <h2>{user.name}</h2>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Bio:</strong> {user.profile?.bio || "No bio available"}</p>
-            <p><strong>Powers:</strong> {user.profile?.powers?.join(", ") || "No powers listed"}</p>
-            <button style={styles.button} onClick={updateProfile}>Update Profile</button>
-        </div>
+        <Container className='p-2'>
+            <Row className='p-2'>
+            <Col xs={12} sm={3}>
+                  <Stack className='dash-profile-panel p-4' direction='vertical' gap={3}>
+                     <Image className='profile-picture' src={user.profile.image} roundedCircle />
+                     <div className='user-bio-box'>
+                        <h2>{user.name}</h2>
+                        <p><strong>Email:</strong> {user.email}</p>
+                        <p><strong>Bio:</strong> {user.profile?.bio || "No bio available"}</p>
+                        {viewerRole === "Superhero" && (
+                            <p><strong>Powers:</strong> { user.profile?.powers?.join(", ") || "No powers listed"}</p>
+                        )}
+                     </div>
+                     {/* <div className='rating'>
+                        <p>{user.profile.bio}</p>
+                        <StarRatings rating={user.profile.avgRating} count={user.profile.numReviews}/>
+                     </div> */}
+                     <Button className="p-2" size="md" variant="secondary" onClick={updateProfile}>Update Profile</Button>
+                  </Stack>
+               </Col>
+               <Col sm={6}>
+                <Stack className='profile-review-panel p-4' direction='vertical' gap={3}>
+                     <h2>Reviews for {user.name}</h2>
+                     { userReviews.map((r,i) => <ReviewBox key={i} review={r}/>)}
+                  </Stack>
+               </Col>
+               <Col sm={3}>
+                <Stack className='profile-fave-panel p-4' direction='vertical' gap={3}>
+                     <h2>My Favourite Heroes</h2>
+                  </Stack>
+               </Col>
+            </Row>
+        </Container>
     );
 };
+
+const ReviewBox = (props) => {
+    const {review} = props
+    let date = review.dateReviewed.slice(0,10)
+    console.log(review)
+    return (
+        <div className='review-container p-2'>
+            <div className='review-text'>
+                <h3>{review.comment}</h3>
+                <div className='d-flex'>
+                    <div>{date}</div>
+                    <div><Link to={`../user/${review.reviewer._id}`}>{review.reviewer.name}</Link></div>
+                </div>
+            </div>
+            <div className='review-image'>
+                <Image className='profile-picture' src={review.reviewer.profile.image} roundedCircle />
+            </div>
+        </div>
+    )
+}
 
 const styles = {
     container: {
