@@ -5,6 +5,10 @@ const userController = require("../controllers/userControllers")
 
 router.post("/", userController.createUser);
 
-router.get("/:id", userController.getUserByID)
+router.patch("/:id", userController.updateUser);
+
+router.patch("/:id/add/:favouriteid", userController.addFavourite);
+
+router.get("/:id", userController.getUserByID);
 
 module.exports = router;
