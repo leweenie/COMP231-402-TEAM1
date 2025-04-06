@@ -17,29 +17,18 @@ const JobBoard = (props) => {
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [jobApplicants, setJobApplicants] = useState({});
   const [showJobDetails, setShowJobDetails] = useState(false);
-
-  // Variable for displaying a message before fetchJobs has completed
   const [loading, setLoading] = useState(false);
-
-  // Variable for displaying a message when no jobs are available
   const [fetchJobsStatusMessage, setFetchJobsStatusMessage] = useState('');
-
-  // Variables for URL query for filtering params
   const [searchField, setSearchField] = useState('');
   const [locationField, setLocationField] = useState('');
   const [selectedPowers, setSelectedPowers] = useState([]);
-
-  // Toggle for showing/hiding the filter UI  
   const [showExtraFilters, setShowExtraFilters] = useState(false);
-
   const [filtersCleared, setFiltersCleared] = useState(false);
 
-  // Call fetchJobs upon initial render (component mount)
   useEffect(() => {
     fetchJobs();
   }, []);
 
-  // Trigger a re-fetch of jobs only when filters are cleared via Clear Filters button
   useEffect(() => {
     if (filtersCleared) {
       fetchJobs();
@@ -49,26 +38,15 @@ const JobBoard = (props) => {
 
   const fetchJobs = async () => {
     setLoading(true);
-    // Compose params query for filtering
     const searchQuery = encodeURIComponent(searchField);
     const locationQuery = encodeURIComponent(locationField);
     const powersQuery = selectedPowers.map(encodeURIComponent).join(',');
     const queryParams = new URLSearchParams();
-    if (searchQuery) {
-      queryParams.append("search", searchQuery);
-    }
-    if (locationQuery) {
-      queryParams.append("location", locationQuery);
-    }
-    if (powersQuery) {
-      queryParams.append("skills", powersQuery);
-    }
 
-    /* 
-    Call backend to retrieve list of jobs, 
-    sorted by status = active and lastest date,
-    filtered by title/description, location, and/or powers 
-    */
+    if (searchQuery) queryParams.append("search", searchQuery);
+    if (locationQuery) queryParams.append("location", locationQuery);
+    if (powersQuery) queryParams.append("skills", powersQuery);
+
     try {
       const response = await fetch(`http://localhost:5000/api/jobs/board?${queryParams.toString()}`, {
         method: 'GET',
@@ -78,9 +56,7 @@ const JobBoard = (props) => {
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error - Status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error - Status: ${response.status}`);
 
       const data = await response.json();
 
@@ -98,9 +74,8 @@ const JobBoard = (props) => {
       }
     } catch (error) {
       console.error('Error fetching jobs from server:', error);
-      // Fallback to mock jobs when there's an error with the backend server
       const mockCreators = generateMockJobPosters(5);
-      const mockTasks = generateMockTasks(mockCreators, 5)
+      const mockTasks = generateMockTasks(mockCreators, 5);
       setTasks(mockTasks);
       setFetchJobsStatusMessage('Server unavailable. Showing mock jobs.');
     } finally {
@@ -123,13 +98,44 @@ const JobBoard = (props) => {
     setSelectedJobId(null);
   };
 
-  // Parse for image in job, else fallback to dummy image
-  const getThumbnail = (image, title) =>
-    image && image.trim() !== ''
-      ? image
-      : `https://dummyimage.com/100x100/97ddf7/000.jpg&text=${encodeURIComponent(title)}`;
+  const handleDelete = async (jobId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this job?");
+    if (!confirmed) return;
 
-  // Reset all filter fields and trigger fetch jobs again via filtersCleared flag
+    try {
+      const response = await fetch(`http://localhost:5000/api/jobs/${jobId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        alert("Job deleted!");
+        fetchJobs();
+      } else {
+        const errorText = await response.text();
+        console.error("Delete failed:", errorText);
+        alert("Failed to delete job.");
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      alert("Something went wrong.");
+    }
+  };
+
+  const getThumbnail = (image, title) => {
+    if (image && image.trim() !== "") {
+      
+      if (image.startsWith("/uploads")) {
+        return `http://localhost:5000${image}`;
+      }
+      
+      return image;
+    }
+  
+    
+    return `https://dummyimage.com/100x100/97ddf7/000.jpg&text=${encodeURIComponent(title)}`;
+  };
+  
+
   const clearFilters = () => {
     setSearchField('');
     setLocationField('');
@@ -146,7 +152,6 @@ const JobBoard = (props) => {
 
       <Row className="mb-3">
         <Col xs={12}>
-        {/* Toggle visibility of the filter UI. */}
           <Button variant="primary" onClick={() => setShowExtraFilters(!showExtraFilters)}>
             {showExtraFilters ? 'Hide Filters' : 'Add Filter'}
           </Button>
@@ -239,13 +244,13 @@ const JobBoard = (props) => {
                   objectFit: 'contain',
                   marginBottom: '10px',
                 }}
+                alt="Job"
               />
               <h5>{task.title}</h5>
               <p className="fw-bold">{task.creator?.name}</p>
               <p className="text-muted">{task.location}</p>
               <p style={{ fontSize: '0.9rem' }}>{task.description}</p>
               <div className="d-flex justify-content-center gap-2 mt-3">
-                {/* Show Apply button only for Superhero role, and disable it if already applied. */}
                 {viewerRole === 'Superhero' && (
                   appliedJobs[task._id] ? (
                     <Button variant="success" size="sm" disabled>
@@ -260,6 +265,11 @@ const JobBoard = (props) => {
                 <Button variant="secondary" size="sm" onClick={() => handleViewDetails(task._id)}>
                   View Details
                 </Button>
+                {viewerRole === 'Job Poster' && (
+                  <Button variant="danger" size="sm" onClick={() => handleDelete(task._id)}>
+                    Delete
+                  </Button>
+                )}
               </div>
               <p className="text-muted mt-2" style={{ fontSize: '0.8rem' }}>
                 Posted on: {new Date(task.postDate).toLocaleDateString()}
