@@ -199,6 +199,7 @@ const Dashboard = (props) => {
                onHide={() => setShowHistoryModal(false)} 
                jobs={jobHistory} 
                isLoading={isLoading} 
+               viewerRole={viewerRole}
             />
          </Container>
       )
