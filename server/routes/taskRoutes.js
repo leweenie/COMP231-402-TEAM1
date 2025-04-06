@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus, deleteTask } = require("../controllers/taskController");
+const { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus, deleteTask, editTask } = require("../controllers/taskController");
 const multer = require("multer");
 
 
