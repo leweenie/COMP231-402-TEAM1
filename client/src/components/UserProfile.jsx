@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Button, Row, Col, Card, Pagination } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const UserProfile = (props) => {
     const {userId} = props;
     const location = useLocation();
+    const navigate = useNavigate();
     const isOtherUserProfile = location.pathname.startsWith('/user/');
     const loggedInUserId = localStorage.getItem('userId');
     
@@ -104,6 +105,11 @@ const UserProfile = (props) => {
 
     useEffect(() => {
         console.log("useEffect is running...");
+        if (!userId || userId === 'null') {
+            navigate('/');
+            return;
+        }
+        
         fetch(`http://localhost:5000/api/users/${userId}`)
             .then(response => {
                 if (!response.ok) {
@@ -120,7 +126,7 @@ const UserProfile = (props) => {
                 console.error("Error fetching user:", error);
                 setError(error.message);
             });
-    }, [userId]);
+    }, [userId, navigate]);
 
     const renderStars = (rating) => {
         const stars = [];
