@@ -3,10 +3,10 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-const CreateJobForm = () => {
+const CreateJobForm = ({ userId }) => {
+
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -15,49 +15,68 @@ const CreateJobForm = () => {
     formData.append("location", event.target[1].value);
     formData.append("description", event.target[2].value);
 
-    // Get selected abilities
-    const selectedAbilities = Array.from(event.target[4].selectedOptions).map(opt => opt.value);
+    const selectElement = event.target.querySelector("#multi-select");
+    const selectedAbilities = selectElement
+      ? Array.from(selectElement.selectedOptions).map(opt => opt.value)
+      : [];
+
     formData.append("skills", selectedAbilities.join(","));
 
     if (selectedFile) {
       formData.append("image", selectedFile);
     }
 
+    formData.append("creator", userId); 
+
+
     try {
-      const response = await fetch("http://localhost:5000/api/jobs", {
+      const response = await fetch("http://localhost:5000/api/jobs/create", {
         method: "POST",
         body: formData,
       });
 
       if (response.ok) {
         alert("Job submitted successfully!");
+        window.location.href = "/job-board"; // or "/job-board"
       } else {
-        alert("Error submitting job");
+        const errorText = await response.text();
+        console.error("Server responded with:", response.status, errorText);
+        alert("Error submitting job: " + errorText);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Network or code error:", error);
+      alert("Something went wrong. Try again.");
     }
-  };
+  }; // ✅ ← this closes handleSubmit
 
   return (
     <Container className='p-2'>
-      <Form>
-        <Form.Control type="text" required placeholder="Title" className="mb-3"/>
-        <Form.Control type="text" required placeholder="Location" className="mb-3" />
-        <Form.Control as="textarea" required type="text" placeholder="Add description" className="mb-3" />
+      <Form onSubmit={handleSubmit}>
+        <Form.Control type="text" required placeholder="Title" className="mb-3" name="title" />
+        <Form.Control type="text" required placeholder="Location" className="mb-3" name="location" />
+        <Form.Control as="textarea" required placeholder="Add description" className="mb-3" name="description" />
+
         <Form.Label>This calls for...</Form.Label>
-        <Form.Select className="form-multi-select mb-3" id="multi-select" multiple>
-          <option value="opt-1">Telekinesis</option>
-          <option value="opt-2">Super Strength</option>
-          <option value="opt-3">X-Ray Vision</option>
-          <option value="opt-4">Other</option>
+        <Form.Select id="multi-select" name="skills" multiple className="form-multi-select mb-3">
+          <option value="Telekinesis">Telekinesis</option>
+          <option value="Super Strength">Super Strength</option>
+          <option value="X-Ray Vision">X-Ray Vision</option>
+          <option value="Other">Other</option>
         </Form.Select>
-        <Form.Control type="file" id="image" className="mb-3" onChange={(e) => setSelectedFile(e.target.files[0])} />
+
+        <Form.Control
+          type="file"
+          id="image"
+          className="mb-3"
+          onChange={(e) => setSelectedFile(e.target.files[0])}
+        />
+
         <Button variant="primary" type="submit">
           Submit
         </Button>
       </Form>
     </Container>
   );
-}
-export default CreateJobForm
+};
+
+export default CreateJobForm;
