@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
     phone: {type: String, required: true},
     role: {type: [String]},
     profile: profileSchema,
+    favourites: [{ type: mongoose.Schema.Types.ObjectId, ref: "user"}], 
     tasks_posted: [{ type: mongoose.Schema.Types.ObjectId, ref: "task" }],
     tasks_completed: [{ type: mongoose.Schema.Types.ObjectId, ref: "task" }]
 }, 

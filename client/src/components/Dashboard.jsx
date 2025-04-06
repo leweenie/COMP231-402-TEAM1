@@ -28,7 +28,7 @@ const Dashboard = (props) => {
          fetch(url)
          .then(res=>res.json()).then(data => setUser(data))
       }
-   }, [userId])
+   }, [userId]);
 
    const fetchJobHistory = () => {
       setIsLoading(true);
@@ -186,7 +186,8 @@ const Dashboard = (props) => {
                         <p>{user.profile.bio}</p>
                      </div>
                      <div className='rating'>
-                        <StarRatings rating={user.profile.avgRating} count={user.profile.numReviews}/>
+                        <p>{user.profile.bio}</p>
+                        <StarRatings rating={user.profile.avgRating} count={user.profile.numReviews} />
                      </div>
                      {viewerRole === "Job Poster" && (
                         <Button href="/create-job-post">Create a Job Post</Button>
@@ -206,4 +207,5 @@ const Dashboard = (props) => {
 
    return null;
 }
-export default Dashboard
+
+export default Dashboard;
