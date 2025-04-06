@@ -144,3 +144,36 @@
   gap: 10px;
   margin-top: auto;
 }
+.return-outer {
+  background-color: #fff;
+  border-bottom: #1c75bc solid 3px;
+}
+.return-inner {
+  max-width: 1320px;
+}
+.return-inner a {
+  color: #000;
+  font-weight: 600;
+  text-decoration: none;
+}
+.return-inner a:hover {
+  color: #1c75bc;
+}
+
+/* BootStraps Colour Override */
+.btn.btn-primary {
+  background: #1c75bc;
+  border-color: #1c75bc;
+}
+.btn:hover.btn-primary {
+  background: #1967a7;
+  border-color: #1967a7;
+}
+.btn.btn-secondary {
+  background: #fbb040;
+  border-color: #fbb040;
+}
+.btn:hover.btn-secondary {
+  background: #f49d1b;
+  border-color: #f49d1b;
+}

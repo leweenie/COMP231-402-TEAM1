@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from "react-router";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Image from 'react-bootstrap/Image';
@@ -8,17 +9,21 @@ const DashApplicantModal = (props) => {
    const [applicantDetails, setApplicantDetails] = useState([])
 
    useEffect(() => {
-      if (applicants) {
+      if (applicants && Array.isArray(applicants) && applicants.length > 0) {
          const fetchApplicantDetails = async () => {
             const results = []
             for (const applicant of applicants) {
-               const response = await fetch(`http://localhost:5000/api/users/${applicant.applicant._id}`)
-               const data = await response.json()
-               results.push(data)
+               if (applicant && applicant.applicant && applicant.applicant._id) {
+                  const response = await fetch(`http://localhost:5000/api/users/${applicant.applicant._id}`)
+                  const data = await response.json()
+                  results.push(data)
+               }
             }
             setApplicantDetails(results)
          }
          fetchApplicantDetails()
+      } else {
+         setApplicantDetails([])
       }
    }, [applicants])
 
@@ -64,13 +69,20 @@ const DashApplicantModal = (props) => {
                            <span className="text-muted">{app.profile.bio}</span>
                         </div>
                      </div>
-                     <Button 
-                        size="sm" 
-                        variant="primary"
-                        onClick={() => handleAcceptApplicant(taskId, app._id)}
-                     >
-                        Accept
-                     </Button>
+                     <div className='button-container'>
+                        <Link to={`/user/${app._id}`}>
+                           <Button className="p-2" size="sm" variant="secondary">
+                              View Profile
+                           </Button>
+                        </Link>
+                        <Button 
+                           size="sm" 
+                           variant="primary"
+                           onClick={() => handleAcceptApplicant(taskId, app._id)}
+                        >
+                           Accept
+                        </Button>
+                     </div>
                   </div>
                ))}
             </div>

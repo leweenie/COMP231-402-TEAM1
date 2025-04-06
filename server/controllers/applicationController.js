@@ -26,14 +26,19 @@ const submitApplication = async (req, res) => {
 const getApplicants = async (req, res) => {
     try {
         const applicants = await Application.find({ task: req.params.taskID }).populate("applicant", "name email phone");
-
-        if(!applicants.length) {
-            return res.status(404).json({ error: "No applicants have applied to this task yet."});
-        }
-
         res.json(applicants);
     } catch (err) {
         res.status(500).json({error: "An unexpected problem occured. Unable to get applicants." })
+    }
+};
+
+const getAllApplications = async (req, res) => {
+    try {
+        const applications = await Application.find().populate("applicant", "name _id");
+        res.json(applications);
+    } catch (err) {
+        console.error("Error getting all applications:", err);
+        res.status(500).json({ error: "Failed to get applications" });
     }
 };
 
@@ -84,4 +89,4 @@ const acceptApplicant = async (req, res) => {
     }
 };
 
-module.exports = { submitApplication, getApplicants, acceptApplicant };
+module.exports = { submitApplication, getApplicants, getAllApplications, acceptApplicant };
