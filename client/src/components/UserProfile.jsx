@@ -51,7 +51,6 @@ const UserProfile = (props) => {
         
         try {
             const reviewData = {
-                reviewer: loggedInUserId,
                 reviewee: userId,
                 task: taskId,
                 rating: rating,
@@ -244,11 +243,6 @@ const UserProfile = (props) => {
                                                     {new Date(review.dateReviewed).toLocaleDateString()}
                                                 </div>
                                             </div>
-                                            {review.reviewer && review.reviewer.name && (
-                                                <div className="text-muted mt-2">
-                                                    Review by: {review.reviewer.name}
-                                                </div>
-                                            )}
                                         </Card.Body>
                                     </Card>
                                 ))}

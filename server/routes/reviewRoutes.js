@@ -5,14 +5,13 @@ const mongoose = require('mongoose');
 
 router.post('/', async (req, res) => {
     try {
-        const { jobId, rating, comment, timestamp, reviewer, reviewee } = req.body;
+        const { jobId, rating, comment, timestamp, reviewee } = req.body;
         
         const review = new Review({
             task: jobId,
             rating: rating,
             comment: comment,
             dateReviewed: new Date(timestamp),
-            reviewer: reviewer,
             reviewee: reviewee
         });
 
@@ -26,14 +25,14 @@ router.post('/', async (req, res) => {
 
 router.post('/create', async (req, res) => {
     try {
-        const { task, rating, comment, dateReviewed, reviewer, reviewee } = req.body;
+        const { task, rating, comment, dateReviewed, reviewee } = req.body;
         
         const review = new Review({
             task: task || null,
             rating: rating,
             comment: comment,
             dateReviewed: dateReviewed ? new Date(dateReviewed) : new Date(),
-            reviewer: reviewer,
+
             reviewee: reviewee
         });
 
@@ -61,7 +60,6 @@ router.get('/user/:userId', async (req, res) => {
         }
         
         const reviews = await Review.find({ reviewee: req.params.userId })
-            .populate('reviewer', 'name')
             .sort({ dateReviewed: -1 });
             
         res.json(reviews);
