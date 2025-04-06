@@ -158,5 +158,25 @@ const deleteTask = async (req, res) => {
     }
   };
   
+const editTask = async (req, res) => {
+    const { id } = req.params;
+    const { title, description, image, skills } = req.body;
 
-module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus, deleteTask };
+    const update = { title, description, image, skills }
+    try {
+        const updatedTask = await Task.findByIdAndUpdate(
+            id,
+            { $set: update },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedTask) {
+            return res.status(404).json({ error: "Task could not be found."})
+        } 
+        res.status(200).json(updatedTask)
+    } catch (err) {
+        res.status(400).json({ error: "Task could not be updated."})
+    }
+};
+
+module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus, editTask, deleteTask };
