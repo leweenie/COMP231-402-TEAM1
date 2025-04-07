@@ -1,7 +1,7 @@
 const Task = require("../models/Task.js");
 const Application = require("../models/Application.js");
 const User = require("../models/User.js");
-
+const axios = require("axios");
 
 const getAllTasks = async (req, res) => {
     try {
@@ -71,24 +71,39 @@ const getAllTasksSorted = async (req, res) => {
 const createTask = async (req, res) => {
     try {
       const { title, location, description, skills, creator } = req.body;
-      const image = req.file ? `/uploads/${req.file.filename}` : null;
+      const imageFile = req.file;
 
-  
+      let imgurUrl = null;
+
+      if (imageFile) {
+        const imageBase64 = imageFile.buffer.toString("base64");
+
+        const response = await axios.post(
+            "https://api.imgur.com/3/image",
+                { image: imageBase64 },
+                {
+                    headers: {
+                        Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+                    },
+                }
+        );
+
+        imgurUrl = response.data.data.link;
+      }
+
       const newTask = new Task({
         title,
         location,
         description,
-        skills: skills ? skills.split(",") : [],
-        image,
+        skills: skills ? skills.split(",").map(s => s.trim()) : [],
+        image: imgurUrl,
         status: "active",
-        postDate: new Date(),  
-        
+        postDate: new Date(),
         creator
       });
   
       await newTask.save();
   
-      console.log("Task created:", newTask);
       res.status(201).json(newTask);
     } catch (err) {
       console.error("Create task error:", err);

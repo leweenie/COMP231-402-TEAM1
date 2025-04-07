@@ -2,8 +2,10 @@ import { useState } from "react";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { useNavigate } from "react-router-dom";
 
 const CreateJobForm = ({ userId }) => {
+  const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -37,7 +39,7 @@ const CreateJobForm = ({ userId }) => {
 
       if (response.ok) {
         alert("Job submitted successfully!");
-        window.location.href = "/job-board"; // or "/job-board"
+        navigate("/job-board");
       } else {
         const errorText = await response.text();
         console.error("Server responded with:", response.status, errorText);
@@ -47,7 +49,7 @@ const CreateJobForm = ({ userId }) => {
       console.error("Network or code error:", error);
       alert("Something went wrong. Try again.");
     }
-  }; // ✅ ← this closes handleSubmit
+  };
 
   return (
     <Container className='p-2'>
