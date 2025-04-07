@@ -3,12 +3,12 @@ import { Form, Button, Row, Col, Card, Pagination } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const UserProfile = (props) => {
-    const {userId} = props;
+    const {userId, isFave} = props;
     const location = useLocation();
     const navigate = useNavigate();
     const isOtherUserProfile = location.pathname.startsWith('/user/');
     const loggedInUserId = localStorage.getItem('userId');
-    
+
     const queryParams = new URLSearchParams(location.search);
     const taskId = queryParams.get('taskId');
 
@@ -24,7 +24,7 @@ const UserProfile = (props) => {
     const [currentPage, setCurrentPage] = useState(1);
     const reviewsPerPage = 2;
 
-    const [favourites, setFavourites] = useState(false);
+    const [favourites, setFavourites] = useState([]);
     const [isFavourite, setIsFavourite] = useState(false)
     const [loadingFavourites, setLoadingFavourites] = useState(false)
     
@@ -107,21 +107,30 @@ const UserProfile = (props) => {
         }
     };
 
-    // const fetchFavourites = async () => {
-    //     setLoadingFavourites(true);
-    //     try {
-    //         const response = await fetch(`http://localhost:5000/api/reviews/user/${userId}`);
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! Status: ${response.status}`);
-    //         }
-    //         const data = await response.json();
-    //         setFavourites(data);
-    //     } catch (error) {
-    //         console.error("Error fetching favourites:", error);
-    //     } finally {
-    //         setLoadingFavourites(false);
-    //     }
-    // };
+    const fetchFavourites = async () => {
+        setLoadingFavourites(true);
+        try {
+            const response = await fetch(`http://localhost:5000/api/users/${userId}/favourites`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            setFavourites(data);
+        } catch (error) {
+            console.error("Error fetching favourites:", error);
+        } finally {
+            setLoadingFavourites(false);
+        }
+    };
+
+    useEffect(() => {
+        // if (favourites.length) {
+        //     if (isOtherUserProfile)
+        //         for(let f in favourites){
+        //             if f._id
+        //         }
+        // }
+    },[favourites])
 
     useEffect(() => {
         console.log(isFavourite ? 'added to favourite' : 'removed from favourites')
@@ -147,6 +156,9 @@ const UserProfile = (props) => {
                 console.log("Fetched user:", data); // Debugging line
                 setUser(data);
                 fetchReviews();
+            })
+            .then(() => {
+                fetchFavourites();
             })
             .catch(error => {
                 console.error("Error fetching user:", error);
