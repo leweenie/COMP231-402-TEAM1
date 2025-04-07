@@ -23,6 +23,10 @@ const UserProfile = (props) => {
     
     const [currentPage, setCurrentPage] = useState(1);
     const reviewsPerPage = 2;
+
+    const [favourites, setFavourites] = useState(false);
+    const [isFavourite, setIsFavourite] = useState(false)
+    const [loadingFavourites, setLoadingFavourites] = useState(false)
     
     const indexOfLastReview = currentPage * reviewsPerPage;
     const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
@@ -103,6 +107,28 @@ const UserProfile = (props) => {
         }
     };
 
+    // const fetchFavourites = async () => {
+    //     setLoadingFavourites(true);
+    //     try {
+    //         const response = await fetch(`http://localhost:5000/api/reviews/user/${userId}`);
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! Status: ${response.status}`);
+    //         }
+    //         const data = await response.json();
+    //         setFavourites(data);
+    //     } catch (error) {
+    //         console.error("Error fetching favourites:", error);
+    //     } finally {
+    //         setLoadingFavourites(false);
+    //     }
+    // };
+
+    useEffect(() => {
+        console.log(isFavourite ? 'added to favourite' : 'removed from favourites')
+        // if (favourites.includes)
+
+    }, [isFavourite])
+
     useEffect(() => {
         console.log("useEffect is running...");
         if (!userId || userId === 'null') {
@@ -146,7 +172,7 @@ const UserProfile = (props) => {
     return (
         <div className="container mt-4">
             <div className="row">
-                <div className="col-md-4">
+                <div className="col-md-3">
                     <div style={styles.container}>
                         <img src={user.profile.image || "https://www.w3schools.com/w3images/avatar2.png"} alt="Profile" style={styles.image} />
                         <h2>{user.name}</h2>
@@ -155,21 +181,28 @@ const UserProfile = (props) => {
                         <p><strong>Powers:</strong> {user.profile?.powers?.join(", ") || "No powers listed"}</p>
                         
                         {!isOtherUserProfile && (
-                            <button style={styles.button} onClick={updateProfile}>Update Profile</button>
+                            <Button onClick={updateProfile}>Update Profile</Button>
+                            // <button style={styles.button} onClick={updateProfile}>Update Profile</button>
                         )}
                         
                         {isOtherUserProfile && (
-                            <button 
-                                style={styles.button} 
-                                onClick={() => setShowReviewForm(!showReviewForm)}
-                            >
-                                {showReviewForm ? 'Cancel Review' : 'Write a Review'}
-                            </button>
+                            <div>
+                                <Button onClick={() => setShowReviewForm(!showReviewForm)}>
+                                    { showReviewForm ? 'Cancel Review' : 'Write a Review' }
+                                </Button>
+                                {/* <button
+                                    style={styles.button}
+                                    onClick={() => setShowReviewForm(!showReviewForm)}
+                                >
+                                    {showReviewForm ? 'Cancel Review' : 'Write a Review'}
+                                </button> */}
+                                <FaveButton isFavourite={isFavourite} setIsFavourite={setIsFavourite} />
+                            </div>
                         )}
                     </div>
                 </div>
 
-                <div className="col-md-8">
+                <div className="col-md-6">
                     {showReviewForm && (
                         <div style={styles.reviewContainer}>
                             <h3>Write a Review</h3>
@@ -284,29 +317,27 @@ const UserProfile = (props) => {
                         )}
                     </div>
                 </div>
+                <div className="col-md-3">
+                    <div style={styles.container}>
+
+                    </div>
+                </div>
             </div>
         </div>
     );
 };
 
-const ReviewBox = (props) => {
-    const {review} = props
-    let date = review.dateReviewed.slice(0,10)
-    console.log(review)
-    return (
-        <div className='review-container p-2'>
-            <div className='review-text'>
-                <h3>{review.comment}</h3>
-                <div className='d-flex'>
-                    <div>{date}</div>
-                    <div><Link to={`../user/${review.reviewer._id}`}>{review.reviewer.name}</Link></div>
-                </div>
-            </div>
-            <div className='review-image'>
-                <Image className='profile-picture' src={review.reviewer.profile.image} roundedCircle />
-            </div>
-        </div>
-    )
+const FaveButton = (props) => {
+    const {isFavourite, setIsFavourite} = props
+
+    if (isFavourite) 
+        return (
+            <Button variant='outline-primary' className='fave-button' onClick={() => setIsFavourite(false)}>Favourite <img src='/src/assets/heart-fill.svg'/></Button>
+        )
+    else 
+        return (
+            <Button variant='outline-primary' className='fave-button' onClick={() => setIsFavourite(true)}>Add Favourite <img src='/src/assets/heart.svg'/></Button>
+        )
 }
 
 const styles = {
@@ -362,5 +393,6 @@ const styles = {
     }
 };
 
-export default UserProfile;
 
+
+export default UserProfile;
