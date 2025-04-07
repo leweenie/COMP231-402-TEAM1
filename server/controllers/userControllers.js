@@ -51,6 +51,21 @@ const addFavourite = async(req, res) => {
     }
 }
 
+const getAllFavourites = async(req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await User.findById(id).populate("favourites", "name email phone profile.image");
+
+        if(!user) {
+            return res.status(404).json({error: "Could not find the user for this ID."});
+        }  
+        res.status(200).json(user.favourites);      
+    } catch (err) {
+        res.status(500).json({error: "Could not retrieve favourites."})
+    }
+}
+
 const getUserByID = async(req, res) => {
     const { id } = req.params;
 
@@ -66,4 +81,4 @@ const getUserByID = async(req, res) => {
     }
 }
 
-module.exports = { createUser, updateUser, addFavourite, getUserByID };
+module.exports = { createUser, updateUser, addFavourite, getAllFavourites, getUserByID };

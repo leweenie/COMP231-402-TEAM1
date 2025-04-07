@@ -9,6 +9,8 @@ router.patch("/:id", userController.updateUser);
 
 router.patch("/:id/add/:favouriteid", userController.addFavourite);
 
+router.get("/:id/favourites", userController.getAllFavourites);
+
 router.get("/:id", userController.getUserByID);
 
 module.exports = router;
