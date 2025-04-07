@@ -47,7 +47,7 @@ const App = () => {
         <Route path="/" element={<Layout><Body setUserName={setUserName} /></Layout>} />
         <Route path="/dashboard" element={<Layout><Dashboard userId={userId} viewerRole={userName} /></Layout>} />
         <Route path="/job-board" element={<Layout><JobBoard userId={userId} viewerRole={userName} /></Layout>} />
-        <Route path="/profile" element={<Layout><UserProfile userId={userId} isFave={null}/></Layout>} />
+        <Route path="/profile" element={<Layout><UserProfile userId={userId} currentId={null} isFave={null} setDisplayedUserId={null}/></Layout>} />
         <Route path="/create-job-post" element={<Layout><CreateJobForm userId={userId} /></Layout>} />
         <Route path="/user/:id" element={<Layout><DisplayApplicantProfile currentId={userId} /></Layout>} />
       </Routes>

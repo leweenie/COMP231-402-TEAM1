@@ -228,6 +228,17 @@ h3 {
 }
 .fave-button img {
   height: 25px;
+  
+}
+.fave-image {
+  width: 80px;
+  cursor:pointer;
+}
+
+.fave-image-container {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 20px;
 }
 /* .fave-button:hover {
   background: #1c75bc;

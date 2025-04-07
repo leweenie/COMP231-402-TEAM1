@@ -185,8 +185,7 @@ const Dashboard = (props) => {
                         <h2>{user.name}</h2>
                         <p>{user.profile.bio}</p>
                      </div>
-                     <div className='rating'>
-                        <p>{user.profile.bio}</p>
+                     <div className='rating'>                        
                         <StarRatings rating={user.profile.avgRating} count={user.profile.numReviews} />
                      </div>
                      {viewerRole === "Job Poster" && (

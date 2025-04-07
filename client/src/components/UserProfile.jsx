@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Button, Row, Col, Card, Pagination } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
+import UserReviews from './UserReviews';
+import UserFavourites from './UserFavourites';
 
 const UserProfile = (props) => {
-    const {userId, isFave} = props;
+    const {userId, currentId, isUserFave, setDisplayedUserId} = props;
     const location = useLocation();
     const navigate = useNavigate();
     const isOtherUserProfile = location.pathname.startsWith('/user/');
@@ -12,131 +14,16 @@ const UserProfile = (props) => {
     const queryParams = new URLSearchParams(location.search);
     const taskId = queryParams.get('taskId');
 
-    const [user, setUser] = useState(null);
-    const [error, setError] = useState(null);
-    const [showReviewForm, setShowReviewForm] = useState(false);
-    const [rating, setRating] = useState(0);
-    const [reviewText, setReviewText] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [reviews, setReviews] = useState([]);
-    const [loadingReviews, setLoadingReviews] = useState(false);
-    
-    const [currentPage, setCurrentPage] = useState(1);
-    const reviewsPerPage = 2;
-
-    const [favourites, setFavourites] = useState([]);
+    const [user, setUser] = useState(null); 
+    const [error, setError] = useState(null); 
+    const [showReviewForm, setShowReviewForm] = useState(false); 
     const [isFavourite, setIsFavourite] = useState(false)
-    const [loadingFavourites, setLoadingFavourites] = useState(false)
-    
-    const indexOfLastReview = currentPage * reviewsPerPage;
-    const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
-    const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
-    
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-    const totalPages = Math.ceil(reviews.length / reviewsPerPage);
 
     const updateProfile = () => {
         console.log("Update Profile Clicked!");
     };
-    
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [reviews.length]);
 
-    const submitReview = async (e) => {
-        e.preventDefault();
-        
-        if (rating === 0) {
-            alert("Please select a rating before submitting.");
-            return;
-        }
-        
-        setIsSubmitting(true);
-        
-        try {
-            const reviewData = {
-                reviewer: loggedInUserId,
-                reviewee: userId,
-                task: taskId,
-                rating: rating,
-                comment: reviewText,
-                dateReviewed: new Date()
-            };
-            
-            const response = await fetch('http://localhost:5000/api/reviews/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(reviewData)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            
-            setRating(0);
-            setReviewText('');
-            setShowReviewForm(false);
-            
-            alert("Thank you for your review!");
-            
-            fetchReviews();
-                
-        } catch (error) {
-            console.error("Error submitting review:", error);
-            alert("There was an error submitting your review. Please try again.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const fetchReviews = async () => {
-        setLoadingReviews(true);
-        try {
-            const response = await fetch(`http://localhost:5000/api/reviews/user/${userId}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json();
-            setReviews(data);
-        } catch (error) {
-            console.error("Error fetching reviews:", error);
-        } finally {
-            setLoadingReviews(false);
-        }
-    };
-
-    const fetchFavourites = async () => {
-        setLoadingFavourites(true);
-        try {
-            const response = await fetch(`http://localhost:5000/api/users/${userId}/favourites`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json();
-            setFavourites(data);
-        } catch (error) {
-            console.error("Error fetching favourites:", error);
-        } finally {
-            setLoadingFavourites(false);
-        }
-    };
-
-    useEffect(() => {
-        // if (favourites.length) {
-        //     if (isOtherUserProfile)
-        //         for(let f in favourites){
-        //             if f._id
-        //         }
-        // }
-    },[favourites])
-
-    useEffect(() => {
-        console.log(isFavourite ? 'added to favourite' : 'removed from favourites')
-        // if (favourites.includes)
-
-    }, [isFavourite])
+    useEffect(() => { setIsFavourite(isUserFave) }, [isUserFave])
 
     useEffect(() => {
         console.log("useEffect is running...");
@@ -144,7 +31,7 @@ const UserProfile = (props) => {
             navigate('/');
             return;
         }
-        
+
         fetch(`http://localhost:5000/api/users/${userId}`)
             .then(response => {
                 if (!response.ok) {
@@ -155,28 +42,32 @@ const UserProfile = (props) => {
             .then(data => {
                 console.log("Fetched user:", data); // Debugging line
                 setUser(data);
-                fetchReviews();
-            })
-            .then(() => {
-                fetchFavourites();
-            })
+            })            
             .catch(error => {
                 console.error("Error fetching user:", error);
                 setError(error.message);
             });
     }, [userId, navigate]);
 
-    const renderStars = (rating) => {
-        const stars = [];
-        for (let i = 1; i <= 5; i++) {
-            stars.push(
-                <span key={i} style={{ color: i <= rating ? '#FFD700' : '#ccc' }}>
-                    ★
-                </span>
-            );
-        }
-        return stars;
-    };
+    const addFavourite = async () => {
+         const response = await fetch(`http://localhost:5000/api/users/${currentId}/add/${userId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);        
+        } else setIsFavourite(true)
+
+         
+    }
+
+    const navProfiles = (id) => {
+        if (currentId) setDisplayedUserId(id)
+        navigate(`/user/${id}`)
+    }
 
     if (error) return <p>Error: {error}</p>;
     if (!user) return <p>Loading user data...</p>;
@@ -194,7 +85,6 @@ const UserProfile = (props) => {
                         
                         {!isOtherUserProfile && (
                             <Button onClick={updateProfile}>Update Profile</Button>
-                            // <button style={styles.button} onClick={updateProfile}>Update Profile</button>
                         )}
                         
                         {isOtherUserProfile && (
@@ -202,153 +92,29 @@ const UserProfile = (props) => {
                                 <Button onClick={() => setShowReviewForm(!showReviewForm)}>
                                     { showReviewForm ? 'Cancel Review' : 'Write a Review' }
                                 </Button>
-                                {/* <button
-                                    style={styles.button}
-                                    onClick={() => setShowReviewForm(!showReviewForm)}
-                                >
-                                    {showReviewForm ? 'Cancel Review' : 'Write a Review'}
-                                </button> */}
-                                <FaveButton isFavourite={isFavourite} setIsFavourite={setIsFavourite} />
+                                <FaveButton isFavourite={isFavourite} addFavourite={addFavourite} />
                             </div>
                         )}
                     </div>
                 </div>
-
-                <div className="col-md-6">
-                    {showReviewForm && (
-                        <div style={styles.reviewContainer}>
-                            <h3>Write a Review</h3>
-                            <Form onSubmit={submitReview}>
-                                <Form.Group as={Row} className="mb-3">
-                                    <Form.Label column sm={2}>Rating:</Form.Label>
-                                    <Col sm={10}>
-                                        <div style={styles.starRating}>
-                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                <span 
-                                                    key={star}
-                                                    style={{
-                                                        cursor: 'pointer',
-                                                        fontSize: '30px',
-                                                        color: star <= rating ? '#FFD700' : '#ccc',
-                                                        margin: '0 5px'
-                                                    }}
-                                                    onClick={() => setRating(star)}
-                                                >
-                                                    ★
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </Col>
-                                </Form.Group>
-
-                                <Form.Group as={Row} className="mb-3">
-                                    <Form.Label column sm={2}>Comments:</Form.Label>
-                                    <Col sm={10}>
-                                        <Form.Control 
-                                            as="textarea" 
-                                            rows={3} 
-                                            value={reviewText}
-                                            onChange={(e) => setReviewText(e.target.value)}
-                                            placeholder="Share your experience working with this person..."
-                                        />
-                                    </Col>
-                                </Form.Group>
-
-                                <Form.Group as={Row}>
-                                    <Col sm={{ span: 10, offset: 2 }}>
-                                        <Button 
-                                            type="submit" 
-                                            variant="primary" 
-                                            disabled={isSubmitting}
-                                        >
-                                            {isSubmitting ? 'Submitting...' : 'Submit Review'}
-                                        </Button>
-                                    </Col>
-                                </Form.Group>
-                            </Form>
-                        </div>
-                    )}
-
-                    <div style={styles.reviewsListContainer}>
-                        <h3>Reviews</h3>
-                        {loadingReviews ? (
-                            <p>Loading reviews...</p>
-                        ) : reviews.length > 0 ? (
-                            <>
-                                {currentReviews.map((review, index) => (
-                                    <Card key={index} className="mb-3">
-                                        <Card.Body>
-                                            <div className="d-flex justify-content-between">
-                                                <div>
-                                                    <div style={styles.reviewStars}>
-                                                        {renderStars(review.rating)}
-                                                    </div>
-                                                    <Card.Text className="mt-2">{review.comment}</Card.Text>
-                                                </div>
-                                                <div className="text-muted">
-                                                    {new Date(review.dateReviewed).toLocaleDateString()}
-                                                </div>
-                                            </div>
-                                            {review.reviewer && review.reviewer.name && (
-                                                <div className="text-muted mt-2">
-                                                    Review by: {review.reviewer.name}
-                                                </div>
-                                            )}
-                                        </Card.Body>
-                                    </Card>
-                                ))}
-                                
-                                {totalPages > 1 && (
-                                    <div className="d-flex justify-content-center mt-4">
-                                        <Pagination>
-                                            <Pagination.Prev 
-                                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                                disabled={currentPage === 1}
-                                            />
-                                            
-                                            {Array.from({ length: totalPages }, (_, i) => (
-                                                <Pagination.Item 
-                                                    key={i + 1} 
-                                                    active={currentPage === i + 1}
-                                                    onClick={() => paginate(i + 1)}
-                                                >
-                                                    {i + 1}
-                                                </Pagination.Item>
-                                            ))}
-                                            
-                                            <Pagination.Next 
-                                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                                disabled={currentPage === totalPages}
-                                            />
-                                        </Pagination>
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <p>No reviews yet.</p>
-                        )}
-                    </div>
-                </div>
-                <div className="col-md-3">
-                    <div style={styles.container}>
-
-                    </div>
-                </div>
+                <UserReviews showReviewForm={showReviewForm} setShowReviewForm={setShowReviewForm} loggedInUserId={loggedInUserId} userId={userId} taskId={taskId} />
+                <UserFavourites userId={userId} navProfiles={navProfiles} />
             </div>
         </div>
     );
 };
 
 const FaveButton = (props) => {
-    const {isFavourite, setIsFavourite} = props
-
+    const { isFavourite, addFavourite } = props
+    
+   
     if (isFavourite) 
         return (
-            <Button variant='outline-primary' className='fave-button' onClick={() => setIsFavourite(false)}>Favourite <img src='/src/assets/heart-fill.svg'/></Button>
+            <Button variant='outline-primary' className='fave-button' >Favourite <img src='/src/assets/heart-fill.svg'/></Button>
         )
     else 
         return (
-            <Button variant='outline-primary' className='fave-button' onClick={() => setIsFavourite(true)}>Add Favourite <img src='/src/assets/heart.svg'/></Button>
+            <Button variant='outline-primary' className='fave-button' onClick={() => addFavourite()}>Add Favourite <img src='/src/assets/heart.svg'/></Button>
         )
 }
 
