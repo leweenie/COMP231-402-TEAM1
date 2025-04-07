@@ -144,7 +144,7 @@ const JobBoard = (props) => {
   };
 
   return (
-    <Container className="p-4 temp-border">
+    <Container className="p-4">
       <h2 className="mb-4">Job Board</h2>
       <Button variant="primary" href="/create-job-post" className="mb-3">
         Create Job Post

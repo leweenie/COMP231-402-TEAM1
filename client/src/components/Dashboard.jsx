@@ -181,11 +181,11 @@ const Dashboard = (props) => {
                <Col xs={12} sm={4}>
                   <Stack className='dash-profile-panel p-4' direction='vertical' gap={3}>
                      <Image className='profile-picture' src={user.profile.image} roundedCircle />
-                     <div className='user'>
+                     <div className='user-bio-box'>
                         <h2>{user.name}</h2>
-                     </div>
-                     <div className='rating'>
                         <p>{user.profile.bio}</p>
+                     </div>
+                     <div className='rating'>                        
                         <StarRatings rating={user.profile.avgRating} count={user.profile.numReviews} />
                      </div>
                      {viewerRole === "Job Poster" && (
