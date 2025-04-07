@@ -92,7 +92,7 @@ const UserProfile = (props) => {
                                 <Button onClick={() => setShowReviewForm(!showReviewForm)}>
                                     { showReviewForm ? 'Cancel Review' : 'Write a Review' }
                                 </Button>
-                                <FaveButton isFavourite={isFavourite} addFavourite={addFavourite} />
+                                {user.role == 'superhero' ? <FaveButton isFavourite={isFavourite} addFavourite={addFavourite} /> : null}
                             </div>
                         )}
                     </div>
@@ -107,7 +107,6 @@ const UserProfile = (props) => {
 const FaveButton = (props) => {
     const { isFavourite, addFavourite } = props
     
-   
     if (isFavourite) 
         return (
             <Button variant='outline-primary' className='fave-button' >Favourite <img src='/src/assets/heart-fill.svg'/></Button>
