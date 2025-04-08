@@ -49,7 +49,7 @@ const JobHistoryModal = ({ show, onHide, jobs, isLoading, viewerRole }) => {
                         jobs.map((job) => (
                            <ListGroup.Item key={job._id}>
                               <h5>{job.title}</h5>
-                              {viewerRole === "Superhero" && job.creator && (
+                              {viewerRole === "Superhero" && job.creator && job.applicationStatus !== 'rejected' && (
                                  <div className="my-2">
                                     <Button 
                                        variant="link" 
@@ -57,10 +57,10 @@ const JobHistoryModal = ({ show, onHide, jobs, isLoading, viewerRole }) => {
                                        onClick={() => handleProfileClick(job.creator, job._id)}
                                     >
                                        Leave a Review for Poster!
-                                       </Button>
+                                    </Button>
                                  </div>
                               )}
-                              {viewerRole === "Job Poster" && job.claimedBy && (
+                              {viewerRole === "Job Poster" && job.claimedBy && job.applicationStatus !== 'rejected' && (
                                  <div className="my-2">
                                     <Button 
                                        variant="link" 
