@@ -3,6 +3,8 @@ const Application = require("../models/Application.js");
 const User = require("../models/User.js");
 const axios = require("axios");
 
+// @desc    Get all jobs
+// @route   GET /api/tasks
 const getAllTasks = async (req, res) => {
     try {
         const tasks = await Task.find();
@@ -13,16 +15,17 @@ const getAllTasks = async (req, res) => {
     }
 };
 
-
+// @desc    Get all jobs, sorted by status = active and date, filtered by title, description, location, and/or powers
+// @route   GET /api/tasks/board
 const getAllTasksSorted = async (req, res) => {
     try {
         // variables to hold URL params representing the filters
         const { search, location, skills } = req.query;
         
-        
+        // Query for active jobs only
         let query = { status: "active" };
 
-        
+        // Filter by title or description, case insensitive
         if (search) {
             query.$or = [
                 { title: { $regex: search, $options: "i" } },
@@ -30,18 +33,18 @@ const getAllTasksSorted = async (req, res) => {
             ];
         }
 
-        
+        // Filter by location, case insensitive
         if (location) {
             query.location = { $regex: location, $options: "i" };
         }
 
-        
+        // Filter by skills
         if (skills) {
             const skillsArray = skills.split(",").map(decodeURIComponent);
             query.skills = { $in: skillsArray };
         }
 
-        
+        // Fetch jobs, filter by above queries, and sort by postDate newest first
         const tasks = await Task.find(query).sort({ postDate: -1 });
         
         const tasksWithApplicants = await Promise.all(tasks.map(async (task) => {
@@ -67,7 +70,7 @@ const getAllTasksSorted = async (req, res) => {
     }
 };
 
-
+// Create a new task
 const createTask = async (req, res) => {
     try {
       const { title, location, description, skills, creator } = req.body;
@@ -111,9 +114,7 @@ const createTask = async (req, res) => {
     }
   };
   
-
-
-
+// Get task by ID
 const getTaskByID = async (req, res) => {
     const { id } = req.params;
 
@@ -129,8 +130,7 @@ const getTaskByID = async (req, res) => {
     }
 };
 
-
-
+// Update Task Status
 const updateTaskStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
@@ -138,16 +138,16 @@ const updateTaskStatus = async (req, res) => {
     const allowedStatuses = ["active", "inactive", "completed", "in-progress"];
 
     try {
-        
+        // Validate status input
         if (!allowedStatuses.includes(status)) {
             return res.status(400).json({ error: "Invalid status value." });
         }
 
-        
+        // Update task status
         const updatedTask = await Task.findByIdAndUpdate(
             id,
             { status },
-            { new: true, runValidators: true } 
+            { new: true, runValidators: true }  // Return updated task & apply schema validation
         );
 
         if (!updatedTask) {

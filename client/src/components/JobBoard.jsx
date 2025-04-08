@@ -17,18 +17,28 @@ const JobBoard = (props) => {
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [jobApplicants, setJobApplicants] = useState({});
   const [showJobDetails, setShowJobDetails] = useState(false);
+
+  // Variable for displaying a message before fetchJobs has completed
   const [loading, setLoading] = useState(false);
+
+  // Variable for displaying a message when not able to connect to backend
   const [fetchJobsStatusMessage, setFetchJobsStatusMessage] = useState('');
+
+  // Variables for URL query for filtering params
   const [searchField, setSearchField] = useState('');
   const [locationField, setLocationField] = useState('');
   const [selectedPowers, setSelectedPowers] = useState([]);
   const [showExtraFilters, setShowExtraFilters] = useState(false);
+
+  // Toggle for showing/hiding the filter UI  
   const [filtersCleared, setFiltersCleared] = useState(false);
 
+  // Call fetchJobs upon initial render (component mount)
   useEffect(() => {
     fetchJobs();
   }, []);
 
+  // Trigger a re-fetch of jobs only when filters are cleared via Clear Filters button
   useEffect(() => {
     if (filtersCleared) {
       fetchJobs();
@@ -38,6 +48,7 @@ const JobBoard = (props) => {
 
   const fetchJobs = async () => {
     setLoading(true);
+    // Compose params query for filtering
     const searchQuery = encodeURIComponent(searchField);
     const locationQuery = encodeURIComponent(locationField);
     const powersQuery = selectedPowers.map(encodeURIComponent).join(',');
@@ -47,6 +58,11 @@ const JobBoard = (props) => {
     if (locationQuery) queryParams.append("location", locationQuery);
     if (powersQuery) queryParams.append("skills", powersQuery);
 
+    /* 
+    Call backend to retrieve list of jobs, 
+    sorted by status = active and lastest date,
+    filtered by title/description, location, and/or powers 
+    */
     try {
       const response = await fetch(`http://localhost:5000/api/jobs/board?${queryParams.toString()}`, {
         method: 'GET',
@@ -74,6 +90,7 @@ const JobBoard = (props) => {
       }
     } catch (error) {
       console.error('Error fetching jobs from server:', error);
+      // Fallback to mock jobs when there's an error with the backend server
       const mockCreators = generateMockJobPosters(5);
       const mockTasks = generateMockTasks(mockCreators, 5);
       setTasks(mockTasks);
@@ -121,21 +138,21 @@ const JobBoard = (props) => {
     }
   };
 
+  // Parse for image in job, else fallback to dummy image
   const getThumbnail = (image, title) => {
     if (image && image.trim() !== "") {
-      
+      // For locally hosted images for development work
       if (image.startsWith("/uploads")) {
         return `http://localhost:5000${image}`;
       }
-      
+      // Expected URL that connects to Imgur image link
       return image;
     }
-  
-    
+    // If no valid image set
     return `https://dummyimage.com/100x100/97ddf7/000.jpg&text=${encodeURIComponent(title)}`;
   };
   
-
+  // Reset all filter fields and trigger fetch jobs again via filtersCleared flag
   const clearFilters = () => {
     setSearchField('');
     setLocationField('');
@@ -152,6 +169,7 @@ const JobBoard = (props) => {
 
       <Row className="mb-3">
         <Col xs={12}>
+        {/* Toggle visibility of the filter UI. */}
           <Button variant="primary" onClick={() => setShowExtraFilters(!showExtraFilters)}>
             {showExtraFilters ? 'Hide Filters' : 'Add Filter'}
           </Button>
@@ -251,6 +269,7 @@ const JobBoard = (props) => {
               <p className="text-muted">{task.location}</p>
               <p style={{ fontSize: '0.9rem' }}>{task.description}</p>
               <div className="d-flex justify-content-center gap-2 mt-3">
+                {/* Show Apply button only for Superhero role, and disable it if already applied. */}
                 {viewerRole === 'Superhero' && (
                   appliedJobs[task._id] ? (
                     <Button variant="success" size="sm" disabled>

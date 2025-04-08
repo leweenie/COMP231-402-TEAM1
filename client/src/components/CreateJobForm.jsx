@@ -9,6 +9,7 @@ const CreateJobForm = ({ userId }) => {
 
   const [selectedFile, setSelectedFile] = useState(null);
 
+  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -18,6 +19,8 @@ const CreateJobForm = ({ userId }) => {
     formData.append("description", event.target[2].value);
 
     const selectElement = event.target.querySelector("#multi-select");
+    
+    // Get selected abilities
     const selectedAbilities = selectElement
       ? Array.from(selectElement.selectedOptions).map(opt => opt.value)
       : [];
