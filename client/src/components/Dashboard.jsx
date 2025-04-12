@@ -8,7 +8,6 @@ import Stack from 'react-bootstrap/esm/Stack';
 import Button from 'react-bootstrap/Button';
 import Accordion from 'react-bootstrap/Accordion';
 
-import DashApplicantModal from './DashApplicantModal';
 import StarRatings from './StarRatings';
 import ActiveJobDash from './ActiveJobDash'
 import Notifications from './Notifications';
@@ -21,6 +20,7 @@ const Dashboard = (props) => {
    const [jobHistory, setJobHistory] = useState([]);
    const [showHistoryModal, setShowHistoryModal] = useState(false); 
    const [isLoading, setIsLoading] = useState(false); 
+   const [reloadJobs, setReloadJobs] = useState(false);
 
    useEffect(() => {
       if (userId) {
@@ -141,7 +141,7 @@ const Dashboard = (props) => {
             .catch(err => console.error("Error fetching jobs:", err));
          }
       }      
-   }, [user, viewerRole, userId])
+   }, [user, viewerRole, userId, reloadJobs])
 
    if (user.name) {
       return (
@@ -166,6 +166,7 @@ const Dashboard = (props) => {
                               applicationStatus={task.applicationStatus}
                               viewerRole={viewerRole}
                               creatorId={task.creator}
+                              triggerReload={() => setReloadJobs(prev => !prev)}
                            />
                         ) : (
                            <div className="text-center p-3">

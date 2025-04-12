@@ -35,7 +35,6 @@ const UserFavourites = (props) => {
   };
 
    useEffect(() => {
-           console.log("useEffect is running...");
            if (userId) {
             fetchFavourites();
            }

@@ -1,27 +1,37 @@
 const Application = require("../models/Application");
 const Task = require("../models/Task");
+const User = require("../models/User");
 
-const submitApplication = async (req, res) => {
+const applyToTask = async (req, res) => {
     try {
-        const { task, applicant, status, date } = req.body;
+        const { taskId } = req.params;
+        const { applicantId } = req.body;
 
-        if (!task || !applicant || !status || !date) {
-            return res.status(400).json({ error: "All fields are required." });
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ error: "Job not found" });
+        }
+
+        const existingApplication = await Application.findOne({ task: taskId, applicant: applicantId });
+        if (existingApplication) {
+            return res.status(400).json({ error: "You have already applied for this task" });
         }
 
         const newApplication = new Application({
-            task,
-            applicant,
-            status,
-            date
+            task: taskId,
+            applicant: applicantId
         });
 
         await newApplication.save();
-        res.status(201).json({ message: "Application submitted successfully!", application: newApplication });
+
+        res.status(201).json({
+            message: "Applied to job successfully", application: newApplication
+        })
     } catch (err) {
-        res.status(500).json({ error: "Failed to submit application." });
+        console.error("Error applying to task:", err);
+        res.status(500).json({ error: "Failed to apply to task" });
     }
-};
+}
 
 const getApplicants = async (req, res) => {
     try {
@@ -41,6 +51,29 @@ const getAllApplications = async (req, res) => {
         res.status(500).json({ error: "Failed to get applications" });
     }
 };
+
+const getApplicationsByUserId = async (req, res) => {
+    try {
+        const applicantId  = req.query.applicantId;
+    
+        if (!applicantId) {
+            return res.status(400).json({ error: "Applicant ID is required" });
+        }
+    
+        const applications = await Application.find({ applicant: applicantId })
+        .populate("task", "title description creator")
+        .populate("applicant", "name email phone");
+    
+        if (applications.length === 0) {
+            return res.status(404).json({ message: "No applications found for this user" });
+        }
+    
+        res.json(applications);
+    } catch (error) {
+        console.error("Error fetching applications by applicantId:", error);
+        res.status(500).json({ error: "Failed to get applications" });
+    }
+}
 
 const acceptApplicant = async (req, res) => {
     try {
@@ -89,4 +122,4 @@ const acceptApplicant = async (req, res) => {
     }
 };
 
-module.exports = { submitApplication, getApplicants, getAllApplications, acceptApplicant };
+module.exports = { applyToTask, getApplicants, getAllApplications, getApplicationsByUserId, acceptApplicant };

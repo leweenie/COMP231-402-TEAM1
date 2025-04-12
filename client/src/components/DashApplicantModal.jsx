@@ -49,7 +49,7 @@ const DashApplicantModal = (props) => {
    };
 
    return (
-      <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered {...props}>
+      <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={show} onHide={onHide}>
          <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">Job Applicants</Modal.Title>
          </Modal.Header>

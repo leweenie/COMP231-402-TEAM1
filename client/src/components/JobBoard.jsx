@@ -35,6 +35,7 @@ const JobBoard = (props) => {
 
   // Call fetchJobs upon initial render (component mount)
   useEffect(() => {
+    fetchAppliedJobs();
     fetchJobs();
   }, []);
 
@@ -100,9 +101,56 @@ const JobBoard = (props) => {
     }
   };
 
-  const handleApply = (jobId) => {
-    setAppliedJobs((prev) => ({ ...prev, [jobId]: 'Application Pending' }));
-    console.log(`Applied to job ID: ${jobId}`);
+  /* 
+    Call backend to retrieve the list of superhero's applied jobs,
+    to be used to determine application state for job board's listings
+  */
+  const fetchAppliedJobs = async () => {
+    if (viewerRole === 'Superhero') {
+      try {
+        const response = await fetch(`http://localhost:5000/api/applications/status?applicantId=${userId}`);
+        const applications = await response.json();
+        
+        // Reduce the object to just a list of job IDs
+        const appliedJobsMap = applications.reduce((map, application) => {
+          map[application.task._id] = true;
+          return map;
+        }, {});
+        
+        // Assign to appliedJobs to be used for comparison in JSX rendering
+        setAppliedJobs(appliedJobsMap);
+      } catch (error) {
+        console.error('Error fetching applied jobs:', error);
+      }
+    }
+  };
+
+  const handleApply = async (jobId, applicantId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/applications/apply/${jobId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ applicantId })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
+
+      setAppliedJobs(prevState => ({
+        ...prevState,
+        [jobId]: "application pending"
+      }));
+
+      alert("Applied succesfully!");
+    } catch (error) {
+      console.error("Error applying:", error.message);
+      alert(error.message)
+    }
   };
 
   const handleViewDetails = (jobId) => {
@@ -151,7 +199,7 @@ const JobBoard = (props) => {
     // If no valid image set
     return `https://dummyimage.com/100x100/97ddf7/000.jpg&text=${encodeURIComponent(title)}`;
   };
-  
+
   // Reset all filter fields and trigger fetch jobs again via filtersCleared flag
   const clearFilters = () => {
     setSearchField('');
@@ -169,7 +217,7 @@ const JobBoard = (props) => {
 
       <Row className="mb-3">
         <Col xs={12}>
-        {/* Toggle visibility of the filter UI. */}
+          {/* Toggle visibility of the filter UI. */}
           <Button variant="primary" onClick={() => setShowExtraFilters(!showExtraFilters)}>
             {showExtraFilters ? 'Hide Filters' : 'Add Filter'}
           </Button>
@@ -271,15 +319,14 @@ const JobBoard = (props) => {
               <div className="d-flex justify-content-center gap-2 mt-3">
                 {/* Show Apply button only for Superhero role, and disable it if already applied. */}
                 {viewerRole === 'Superhero' && (
-                  appliedJobs[task._id] ? (
-                    <Button variant="success" size="sm" disabled>
-                      {appliedJobs[task._id]}
-                    </Button>
-                  ) : (
-                    <Button variant="primary" size="sm" onClick={() => handleApply(task._id)}>
-                      Apply
-                    </Button>
-                  )
+                  <Button
+                    variant={appliedJobs[task._id] ? 'success' : 'primary'}
+                    size="sm"
+                    disabled={appliedJobs[task._id]}
+                    onClick={() => handleApply(task._id, userId)}
+                  >
+                    {appliedJobs[task._id] ? 'Already Applied' : 'Apply'}
+                  </Button>
                 )}
                 <Button variant="secondary" size="sm" onClick={() => handleViewDetails(task._id)}>
                   View Details
