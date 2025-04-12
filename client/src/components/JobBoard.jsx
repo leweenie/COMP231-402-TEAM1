@@ -113,10 +113,12 @@ const JobBoard = (props) => {
         
         // Reduce the object to just a list of job IDs
         const appliedJobsMap = applications.reduce((map, application) => {
-          map[application.task._id] = true;
+          if (application?.task?._id) {
+            map[application.task._id] = true;
+          }
           return map;
         }, {});
-        
+
         // Assign to appliedJobs to be used for comparison in JSX rendering
         setAppliedJobs(appliedJobsMap);
       } catch (error) {
