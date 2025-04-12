@@ -97,7 +97,6 @@ const UserReviews = (props) => {
    };
 
    useEffect(() => {
-           console.log("useEffect is running...");
            if (userId) {
             fetchReviews();
            }

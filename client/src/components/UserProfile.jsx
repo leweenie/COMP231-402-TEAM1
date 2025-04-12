@@ -26,7 +26,6 @@ const UserProfile = (props) => {
     useEffect(() => { setIsFavourite(isUserFave) }, [isUserFave])
 
     useEffect(() => {
-        console.log("useEffect is running...");
         if (!userId || userId === 'null') {
             navigate('/');
             return;
@@ -40,7 +39,6 @@ const UserProfile = (props) => {
                 return response.json();
             })
             .then(data => {
-                console.log("Fetched user:", data); // Debugging line
                 setUser(data);
             })            
             .catch(error => {

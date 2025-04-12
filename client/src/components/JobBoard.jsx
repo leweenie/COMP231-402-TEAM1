@@ -147,7 +147,6 @@ const JobBoard = (props) => {
       }));
 
       alert("Applied succesfully!");
-      console.log("Application:", data.application);
     } catch (error) {
       console.error("Error applying:", error.message);
       alert(error.message)
