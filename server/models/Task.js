@@ -11,8 +11,8 @@ const taskSchema = new mongoose.Schema({
         default: "active" 
     },
     skills: [{ type: String }], // Array to store selected abilities,
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
-    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, 
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true }, 
+    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" }, 
     postDate: { type: Date, default: Date.now } 
 }, 
 { timestamps: true }
