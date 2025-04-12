@@ -51,16 +51,27 @@ const getAllTasksSorted = async (req, res) => {
             const applications = await Application.find({ task: task._id })
                 .populate('applicant', 'name profile');
             
-            return {
-                ...task.toObject(),
-                applicants: applications.map(app => ({
-                    _id: app.applicant._id,
-                    name: app.applicant.name,
-                    profile: app.applicant.profile,
-                    status: app.status,
-                    date: app.date
-                }))
-            };
+                return {
+                    ...task.toObject(),
+                    applicants: applications.map(app => {
+                        // Check if applicant is populated and exists
+                        if (app.applicant) {
+                            return {
+                                _id: app.applicant._id,
+                                name: app.applicant.name,
+                                profile: app.applicant.profile,
+                                status: app.status,
+                                date: app.date
+                            };
+                        } else {
+                            // Handle the case when applicant is undefined
+                            return {
+                                status: app.status,
+                                date: app.date
+                            };
+                        }
+                    })
+                };
         }));
 
         res.status(200).json(tasksWithApplicants);
