@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { submitApplication, getApplicants, getAllApplications, acceptApplicant } = require("../controllers/applicationController"); 
+const { applyToTask, getApplicants, getAllApplications, getApplicationsByUserId, acceptApplicant } = require("../controllers/applicationController"); 
 
-router.post("/apply", submitApplication);
+router.post("/apply/:taskId", applyToTask);
 
 router.get("/all", getAllApplications);
+
+router.get("/status", getApplicationsByUserId)
 
 router.get("/:taskID", getApplicants);
 
