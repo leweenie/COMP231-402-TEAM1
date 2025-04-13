@@ -232,8 +232,8 @@ const ActiveJobDash = (props) => {
 
             <div style={{ flex: '1', textAlign: 'right' }}>
                <div className="d-flex justify-content-end gap-2">
-                  {viewerRole === "Superhero" &&
-                     applicationStatus === "accepted" &&
+                  {viewerRole === "Job Poster" &&
+                     acceptedApplicant &&
                      status.toLowerCase() !== "completed" && (
                         <Button
                            variant="success"
