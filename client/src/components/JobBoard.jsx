@@ -13,6 +13,7 @@ const JobBoard = (props) => {
   const { userId, viewerRole } = props;
   const [tasks, setTasks] = useState([]);
   const [appliedJobs, setAppliedJobs] = useState({});
+  const [createdJobs, setCreatedJobs] = useState({});
   const [showApplicants, setShowApplicants] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [jobApplicants, setJobApplicants] = useState({});
@@ -36,6 +37,7 @@ const JobBoard = (props) => {
   // Call fetchJobs upon initial render (component mount)
   useEffect(() => {
     fetchAppliedJobs();
+    fetchCreatedJobs();
     fetchJobs();
   }, []);
 
@@ -119,13 +121,46 @@ const JobBoard = (props) => {
           return map;
         }, {});
 
-        // Assign to appliedJobs to be used for comparison in JSX rendering
+        // Assign to appliedJobs to be used for comparison in JSX rendering for the Apply button
         setAppliedJobs(appliedJobsMap);
       } catch (error) {
         console.error('Error fetching applied jobs:', error);
       }
     }
   };
+
+  /* 
+    Call backend to retrieve the list of job poster's created jobs,
+    to be used to determine which jobs were created by the job poster on the job board's listings
+    and have the option to be deleted
+  */
+  const fetchCreatedJobs = async () => {
+    if (viewerRole === 'Job Poster') {
+      try {
+        const response = await fetch(`http://localhost:5000/api/jobs/userjobs?userId=${userId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'Accept': 'application/json',
+          },
+        });
+        const jobs = await response.json();
+
+        // Reduce the object to just a list of job IDs
+        const createdJobsMap = jobs.reduce((map, job) => {
+          if (job?._id) {
+            map[job._id] = true;
+          }
+          return map;
+        }, {});
+
+        // Assign to createdJobs to be used for comparison in JSX rendering to show Delete button
+        setCreatedJobs(createdJobsMap);
+      } catch (error) {
+        console.error('Error fetching jobs created by user:', error);
+      }
+    }
+  }
 
   const handleApply = async (jobId, applicantId) => {
     try {
@@ -265,6 +300,7 @@ const JobBoard = (props) => {
                     <option value="Telekinesis">Telekinesis</option>
                     <option value="Super Strength">Super Strength</option>
                     <option value="X-ray Vision">X-ray Vision</option>
+                    <option value="Other">Other</option>
                   </Form.Select>
                   <Button variant="outline-secondary" onClick={() => setSelectedPowers([])}>
                     Clear
@@ -333,14 +369,14 @@ const JobBoard = (props) => {
                 <Button variant="secondary" size="sm" onClick={() => handleViewDetails(task._id)}>
                   View Details
                 </Button>
-                {viewerRole === 'Job Poster' && (
+                {viewerRole === 'Job Poster' && createdJobs[task._id] && (
                   <Button variant="danger" size="sm" onClick={() => handleDelete(task._id)}>
                     Delete
                   </Button>
                 )}
               </div>
               <p className="text-muted mt-2" style={{ fontSize: '0.8rem' }}>
-                Posted on: {new Date(task.postDate).toLocaleDateString()}
+              {createdJobs[task._id] ? 'You Posted On:' : 'Posted On:'} {new Date(task.postDate).toLocaleDateString()}
               </p>
             </div>
           </Col>
