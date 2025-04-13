@@ -81,6 +81,29 @@ const getAllTasksSorted = async (req, res) => {
     }
 };
 
+// @desc    Get all jobs for a specfied user ID
+// @route   GET /api/tasks/board/userjobs
+const getAllTasksByUserId = async (req, res) => {
+    try {
+        const userId = req.query.userId;
+
+        if (!userId) {
+            return res.status(400).json({ error: "User ID is required" });
+        }
+
+        const tasks = await Task.find({ creator: userId })
+
+        if (tasks.length === 0) {
+            return res.status(404).json({ message: "No jobs found for this user" });
+        }
+
+        res.json(tasks);
+    } catch (error) {
+        console.error("Error fetching jobs by user ID:", error);
+        res.status(500).json({ error: "Failed to get jobs" });
+    }
+};
+
 // Create a new task
 const createTask = async (req, res) => {
     try {
@@ -205,4 +228,4 @@ const editTask = async (req, res) => {
     }
 };
 
-module.exports = { getAllTasks, getAllTasksSorted, createTask, getTaskByID, updateTaskStatus, editTask, deleteTask };
+module.exports = { getAllTasks, getAllTasksSorted, getAllTasksByUserId, createTask, getTaskByID, updateTaskStatus, editTask, deleteTask };
